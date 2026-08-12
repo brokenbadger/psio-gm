@@ -17,4 +17,4 @@ COPY src/ /app/src/
 
 WORKDIR /app/src
 
-CMD ["python", "psio_game_manager.py"]
+CMD ["python", "psio_gm.py"]

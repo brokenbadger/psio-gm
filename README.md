@@ -1,4 +1,4 @@
-# PSIO Game Manager
+# PSIO-GM
 Prepare PlayStation 1 bin/cue games for use with a PSIO device.<br>
 The only PSIO app that does everything for your autonomously.<br>
 
@@ -20,8 +20,7 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 - Performs CRC-32 checks of each data track using data from the PlayStation Redump project.
 
 ## Windows Users
-There is a Windows exe file:<br/>
-https://github.com/logi-26/psio-game-manager/releases/tag/V0.3<br/>
+Windows builds will be published on the [PSIO-GM releases](https://github.com/brokenbadger/psio-gm/releases) page.
 
 ## Notes
   - For best performance, use the application with your games stored on a PC HDD and then transfer to an SD card.
@@ -283,16 +282,16 @@ This project requires **Python 3.9+** (with Tkinter) and:
 3. **Set up a virtual environment**:
      - Create a virtual environment:
        ```bash
-       python -m venv psio_game_manager_env
+       python -m venv psio_gm_env
        ```
      - Activate the virtual environment:
        - On Windows:
          ```bash
-         psio_game_manager_env\Scripts\activate
+         psio_gm_env\Scripts\activate
          ```
        - On macOS and Linux:
          ```bash
-         source psio_game_manager_env/bin/activate
+         source psio_gm_env/bin/activate
          ```
       - Install dependencies in the virtual environment:
         ```bash
@@ -300,14 +299,14 @@ This project requires **Python 3.9+** (with Tkinter) and:
         ```
       - Run the script (resources resolve relative to the script directory, not your CWD):
         ```bash
-        python src/psio_game_manager.py
+        python src/psio_gm.py
         ```
 
     **Docker (optional, not recommended for GUI use)**:
       - This app needs a display. Prefer a local venv unless you already know how to forward X11/Wayland into a container.
       - Build:
         ```bash
-        docker build -t psio-game-manager-app .
+        docker build -t psio-gm-app .
         ```
       - Run only if you have display forwarding configured for your host.
 
@@ -321,12 +320,12 @@ This project requires **Python 3.9+** (with Tkinter) and:
 2. **OPTIONAL: Run the application with debug print logs**:
    - Run the script using the -d commandline argument:
      ```bash
-     python src/psio_game_manager.py -d
+     python src/psio_gm.py -d
      ```
 
    - Run the exe using the -d commandline argument:
      ```bash
-     psio_game_manager.exe -d
+     psio_gm.exe -d
      ```
 
 ## Building an executable
@@ -336,6 +335,6 @@ This project requires **Python 3.9+** (with Tkinter) and:
      ```
    - From the `src` directory, first launch once so `data/psio_assist.db` is merged from the split parts, then build:
      ```bash
-     pyinstaller --onefile --add-data "data/psio_assist.db:data" --add-data "icon.ico:." --icon=icon.ico --noconsole --distpath builds/windows psio_game_manager.py
+     pyinstaller --onefile --add-data "data/psio_assist.db:data" --add-data "icon.ico:." --icon=icon.ico --noconsole --distpath builds/windows psio_gm.py
      ```
      On Windows, use `;` instead of `:` in `--add-data` separators.

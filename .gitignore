@@ -6,7 +6,7 @@ __pycache__/
 # Virtual environments
 .venv/
 venv/
-psio_game_manager_env/
+psio_gm_env/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

@@ -15,7 +15,7 @@
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 '''
-PSIO Game Manager
+PSIO-GM
 
 This is an open-source application for preparing PlayStation games for use with a PSIO device
 
@@ -67,12 +67,12 @@ from ppf_patcher import PPFProcessor
 from crc_32 import CrcFileVerifier
 
 
-class PSIOGameManager:
+class PSIOGM:
     CURRENT_REVISION = 0.3
     MAX_GAME_NAME_LENGTH = 56
 
     def __init__(self, args=None):
-        """Initialise the PSIO Game Manager application"""
+        """Initialise the PSIO-GM application"""
 
         self.game_list = []
         self.script_root_dir = Path(abspath(dirname(sys.argv[0])))
@@ -113,7 +113,7 @@ class PSIOGameManager:
         self.label_src = None
         self.cover_art_frame = None
 
-        self._debug_print(f'\nPSIO Game Manager v{self.CURRENT_REVISION}')
+        self._debug_print(f'\nPSIO-GM v{self.CURRENT_REVISION}')
 
 
     # ************************************************************************************
@@ -706,7 +706,7 @@ class PSIOGameManager:
         window_height = 770
 
         self.window = Window(
-            title=f'PSIO Game Manager v{self.CURRENT_REVISION}',
+            title=f'PSIO-GM v{self.CURRENT_REVISION}',
             themename=self._get_stored_theme(),
             size=[window_width, window_height],
             resizable=[False, False]
@@ -893,7 +893,7 @@ class PSIOGameManager:
     def _show_about(self):
         """Show the About dialog"""
         message = (
-            f"PSIO Game Manager v{self.CURRENT_REVISION}\n\n"
+            f"PSIO-GM v{self.CURRENT_REVISION}\n\n"
             "Prepare PlayStation 1 bin/cue games for use with a PSIO device.\n\n"
             "Copyright (C) 2021 LoGi26\n"
             "Licensed under the GNU General Public License v3.0"
@@ -917,7 +917,7 @@ class PSIOGameManager:
 def parse_arguments():
     """Parse command-line arguments"""
     parser = ArgumentParser(
-        description="PSIO Game Manager for preparing PlayStation games for use with a PSIO device."
+        description="PSIO-GM for preparing PlayStation games for use with a PSIO device."
     )
 
     parser.add_argument(
@@ -930,5 +930,5 @@ def parse_arguments():
 
 if __name__ == "__main__":
     args = parse_arguments()
-    app = PSIOGameManager(args)
+    app = PSIOGM(args)
     app.run()
