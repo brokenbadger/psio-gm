@@ -895,9 +895,11 @@ class PSIOGM:
         message = (
             f"PSIO-GM v{self.CURRENT_REVISION}\n"
             "Prepare PlayStation 1 bin/cue games for use with a PSIO device.\n"
+            "\n"
             "Based on PSIO Game Manager\n"
             "Copyright (C) 2021 LoGi26\n"
             "Licensed under the GNU General Public License v3.0\n"
+            "\n"
             "PSIO-GM Forked by brokenbadger\n"
             "Copyright (C) 2026 brokenbadger\n"
             "Licensed under the GNU General Public License v3.0"
