@@ -6,9 +6,9 @@ The project is based on [logi-26/psio-game-manager](https://github.com/logi-26/p
 
 Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.1] — 2026-08-12
+## [0.1.0] — 2026-08-12
 
-First PSIO-GM release on branch `v0.1`.
+First PSIO-GM release on branch `v0.1` (release tag **`v0.1.0`** — kept distinct from the branch name to avoid Git ref ambiguity).
 
 ### Security / data safety
 - **Safe multi-BIN merge** — merged BIN/CUE files are staged and verified before originals are deleted ([#1](https://github.com/brokenbadger/psio-gm/issues/1), `5d5e8dc`)

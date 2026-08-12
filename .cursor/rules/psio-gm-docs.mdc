@@ -8,6 +8,10 @@ alwaysApply: true
 ## Branch
 Until the user says otherwise, **all commits go to branch `v0.1`**.
 
+## Version tags
+- **Branch** for ongoing work: `v0.1`
+- **Release tags** use semver patch form: `v0.1.0`, `v0.1.1`, … (never reuse the exact branch name as a tag)
+
 ## Documentation
 When making meaningful changes, update repo documentation as needed:
 
