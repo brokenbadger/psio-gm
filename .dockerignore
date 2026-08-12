@@ -1,0 +1,13 @@
+.venv/
+venv/
+psio_gm_env/
+.git/
+games/
+**/__pycache__/
+*.py[cod]
+src/data/psio_assist.db
+src/config
+src/build/
+src/builds/
+*.md
+image.png

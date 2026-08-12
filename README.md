@@ -302,13 +302,17 @@ This project requires **Python 3.9+** (with Tkinter) and:
         python src/psio_gm.py
         ```
 
-    **Docker (optional, not recommended for GUI use)**:
-      - This app needs a display. Prefer a local venv unless you already know how to forward X11/Wayland into a container.
-      - Build:
+    **Docker Compose (optional, needs X11)**:
+      - Prefer a local venv unless you already know how to forward a display into a container.
+      - Put games under `./games` (or set `PSIO_GAMES_DIR`), then on Linux:
         ```bash
-        docker build -t psio-gm-app .
+        mkdir -p games
+        xhost +local:docker
+        docker compose up --build
         ```
-      - Run only if you have display forwarding configured for your host.
+      - In the app, browse to `/games`.
+      - When finished: `xhost -local:docker`
+      - Equivalent image-only build: `docker build -t psio-gm-app .`
 
 ## Usage
 1. **Using the GUI**:
