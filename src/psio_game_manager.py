@@ -50,6 +50,7 @@ from os.path import exists, join, dirname, abspath
 from json import load, dumps
 from argparse import ArgumentParser
 from ast import literal_eval
+from typing import Optional
 from tkinter import Menu, filedialog, StringVar, BooleanVar, TclError, PhotoImage
 from ttkbootstrap import Window, Floodgauge, Treeview, Style, Scrollbar, Labelframe, Label, Button, NO, CENTER, VERTICAL
 from ttkbootstrap.dialogs import MessageDialog
@@ -151,6 +152,7 @@ class PSIOGameManager:
         """Process the games in the game list"""
 
         self._debug_print('\nPROCESSING GAMES...')
+        failed_games = []
 
         # Loop through all of the Game objects in the game list
         for game_index, game in enumerate(self.game_list):
@@ -164,40 +166,52 @@ class PSIOGameManager:
             self._debug_print(f'GAME_ID: {game.get_id()}')
             self._debug_print(f'GAME_NAME: {game_name}')
 
-            # Merge multi-bin files
-            self._merge_multi_bin_files(game)
-            self._update_progress_bar(30)
+            try:
+                # Merge multi-bin files
+                self._merge_multi_bin_files(game)
+                self._update_progress_bar(30)
 
-            # Generate CU2 file for games with CCDA audio
-            self._generate_cu2_file(game)
-            self._update_progress_bar(40)
+                # Generate CU2 file for games with CCDA audio
+                self._generate_cu2_file(game)
+                self._update_progress_bar(40)
 
-            # Rename the game using the game name from the Redump project
-            if self.redump_rename.get():
-                self.utils.rename_game_using_redump(game)
-            self._update_progress_bar(50)
+                # Rename the game using the game name from the Redump project
+                if self.redump_rename.get():
+                    self.utils.rename_game_using_redump(game)
+                self._update_progress_bar(50)
 
-            # Validate the game name
-            self.utils.validate_game_name(game)
-            self._update_progress_bar(65)
+                # Validate the game name
+                self.utils.validate_game_name(game)
+                self._update_progress_bar(65)
 
-            # Add the game cover art
-            self.utils.add_game_cover_art(game)
-            self._update_progress_bar(75)
+                # Add the game cover art
+                self.utils.add_game_cover_art(game)
+                self._update_progress_bar(75)
 
-            # Apply LibCrypt PPF patch
-            self.utils.apply_libcrypt_patch(game)
-            self._update_progress_bar(95)
+                # Apply LibCrypt PPF patch
+                self.utils.apply_libcrypt_patch(game)
+                self._update_progress_bar(95)
 
-            # Update the game list in the GUI after each game has been processed
-            self._update_game_row(game_index)
+                # Update the game list in the GUI after each game has been processed
+                self._update_game_row(game_index)
+
+            except Exception as error:
+                failed_games.append((game_name, str(error)))
+                self._debug_print(f'ERROR processing {game_name}: {error}')
+                print(f'ERROR processing {game_name}: {error}')
+                self._set_progress_text(f"Failed - {game_name}")
 
             self._debug_print('***********************************************************\n')
 
         # Generate multi-disc games after all of the other processes have been completed
         self._update_progress_bar(100)
         self._set_progress_text("Generating multi-disc files...")
-        self.utils.generate_multidisc_files(self.game_list)
+        try:
+            self.utils.generate_multidisc_files(self.game_list)
+        except Exception as error:
+            failed_games.append(('MULTIDISC.LST generation', str(error)))
+            self._debug_print(f'ERROR generating multi-disc files: {error}')
+            print(f'ERROR generating multi-disc files: {error}')
 
         # Clear the progress status
         self._update_progress_bar(100)
@@ -205,6 +219,23 @@ class PSIOGameManager:
 
         # Update the game list in the GUI
         self._display_game_list()
+
+        if failed_games:
+            failure_lines = '\n'.join(
+                f"- {name}: {message}" for name, message in failed_games
+            )
+            message = (
+                f"{len(failed_games)} item(s) failed during processing.\n"
+                f"Earlier games that completed were left as-is.\n\n"
+                f"{failure_lines}"
+            )
+            md = MessageDialog(
+                message,
+                title='Processing Errors',
+                width=700,
+                padding=(20, 20)
+            )
+            md.show()
 
         self._debug_print('Processing finished!\n')
     # ************************************************************************************
@@ -215,17 +246,20 @@ class PSIOGameManager:
         """Merge multi-bin files"""
         game_name = game.get_cue_sheet().get_game_name()
         game_full_path = join(game.get_directory_path(), game.get_directory_name())
-        cue_full_path = join(game_full_path, game.get_cue_sheet().get_file_name())
 
         if len(game.get_cue_sheet().get_bin_files()) > 1:
             self._debug_print('MERGING BIN FILES...')
             self._set_progress_text(f"Merging bin files - {game_name}")
-            self.utils.merge_bin_files(game)
+            if not self.utils.merge_bin_files(game):
+                raise RuntimeError(f"Failed to merge multi-bin files for {game_name}")
 
-            bin_path = cue_full_path[:-4] + ".bin"
+            # Merged output is named after the cuesheet game name (first BIN stem)
+            bin_path = join(game_full_path, f"{game_name}.bin")
             if exists(bin_path):
                 game.get_cue_sheet().set_bin_files([])
                 game.get_cue_sheet().add_bin_file(Binfile(f"{game_name}.bin", bin_path))
+            else:
+                raise RuntimeError(f"Merged BIN not found after merge: {bin_path}")
     # ************************************************************************************
 
 
@@ -257,7 +291,7 @@ class PSIOGameManager:
 
 
     # ************************************************************************************
-    def _create_game_from_cue(self, game_directory_path: str, cue_sheet: str, sub_folder: str, selected_path: str) -> Game:
+    def _create_game_from_cue(self, game_directory_path: str, cue_sheet: str, sub_folder: str, selected_path: str) -> Optional[Game]:
         """Create a Game object from a CUE sheet."""
         cue_sheet_path = join(game_directory_path, cue_sheet)
 
@@ -279,8 +313,14 @@ class PSIOGameManager:
         bin_files = self.utils.parse_cue_file(cue_sheet_path)
         self._update_progress_bar(40)
 
+        # Missing BIN references already logged by parse_cue_file; skip this game
+        if not bin_files:
+            print(f"ERROR: Skipping game with missing BIN files: {cue_sheet_path}")
+            self._set_progress_text("")
+            return None
+
         # Get the game details from the BIN files
-        game_id = self.utils.parse_game_id(bin_files[0].get_file_path()) if bin_files else None
+        game_id = self.utils.parse_game_id(bin_files[0].get_file_path())
         self._update_progress_bar(50)
 
         disc_number = self.db.get_database_disc_number(game_id) if game_id else 0

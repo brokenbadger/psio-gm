@@ -1,8 +1,8 @@
 # System imports
 from os import listdir, scandir, makedirs, remove, access, R_OK
-from os.path import exists, join, dirname, splitext, isfile, isabs
+from os.path import exists, join, dirname, splitext, isfile, isabs, getsize
 from re import search, sub
-from shutil import copyfile, move, rmtree
+from shutil import copyfile, copy2, move, rmtree
 from typing import Optional
 from pathlib2 import Path
 
@@ -236,19 +236,23 @@ class Utils:
 
 
     # ************************************************************************************
-    def move_file(self, source_path: str, target_path: str):
-        """Move a file from source to destination"""
+    def move_file(self, source_path: str, target_path: str) -> bool:
+        """Move a file from source to destination. Returns True on success."""
 
         # Ensure that we only move files and not directories
         if not exists(source_path):
             print(f"(Error) Source file does not exist: {source_path}")
-            return
+            return False
 
         if isfile(source_path):
             try:
                 move(source_path, target_path)
+                return True
             except OSError as error:
                 print(f"(Error) moving {source_path}: {error}")
+                return False
+
+        return False
     # ************************************************************************************
 
 
@@ -607,8 +611,12 @@ class Utils:
 
 
     # ************************************************************************************
-    def merge_bin_files(self, game: Game):
-        """Merge multi-bin files"""
+    def merge_bin_files(self, game: Game) -> bool:
+        """Merge multi-bin files.
+
+        Copies merged artifacts into place (via staging names) and verifies them
+        before deleting originals, to avoid data loss if a move fails.
+        """
 
         # Get the game info
         cuesheet = game.get_cue_sheet()
@@ -619,41 +627,94 @@ class Utils:
 
         # Get the BIN files
         bin_files = cuesheet.get_bin_files()
+        if len(bin_files) <= 1:
+            return True
 
         # Create a temporary directory to use whilst merging the bin files
         temp_game_dir = join(game_full_path, 'temp_dir')
-        if not exists(temp_game_dir):
+        try:
+            makedirs(temp_game_dir, exist_ok=True)
+        except OSError as error:
+            print(f"ERROR: Creating temp game directory: {error}")
+            return False
+
+        final_bin_path = join(game_full_path, f'{game_name}.bin')
+        final_cue_path = join(game_full_path, cue_file_name)
+        # Stage under unique names so we never clobber originals before they are deleted
+        staged_bin_path = join(game_full_path, f'.{game_name}.bin.merging')
+        staged_cue_path = join(game_full_path, f'.{cue_file_name}.merging')
+
+        try:
+            # Merge the BIN files into the temp directory
+            bin_merged = self.bin_merger.merge(game_name, cue_file_name, bin_files, temp_game_dir)
+
+            temp_bin_path = join(temp_game_dir, f'{game_name}.bin')
+            temp_cue_path = join(temp_game_dir, cue_file_name)
+
+            if not (bin_merged and exists(temp_bin_path) and exists(temp_cue_path)):
+                print(f"ERROR: Bin merge failed for {game_name}")
+                return False
+
+            # Copy merged files into the game directory first (staging names)
             try:
-                makedirs(temp_game_dir, exist_ok=True)
+                copy2(temp_bin_path, staged_bin_path)
+                copy2(temp_cue_path, staged_cue_path)
             except OSError as error:
-                print(f"ERROR: Creating temp game directory: {error}")
-                return
+                print(f"ERROR: Staging merged files for {game_name}: {error}")
+                return False
 
-        # Merge the BIN files
-        bin_merged = self.bin_merger.merge(game_name, cue_file_name, bin_files, temp_game_dir)
+            if not (exists(staged_bin_path) and exists(staged_cue_path) and getsize(staged_bin_path) > 0):
+                print(f"ERROR: Staged merged files missing or empty for {game_name}")
+                return False
 
-        # Check if the single BIN and CUE files have been generated
-        temp_bin_path = join(temp_game_dir, f'{game_name}.bin')
-        temp_cue_path = join(temp_game_dir, cue_file_name)
+            # Only after staged copies are verified, remove originals
+            original_paths = {cue_full_path}
+            for original_bin_file in bin_files:
+                original_paths.add(original_bin_file.get_file_path())
 
-        if bin_merged and exists(temp_bin_path) and exists(temp_cue_path):
+            for original_path in original_paths:
+                if original_path in (staged_bin_path, staged_cue_path):
+                    continue
+                if exists(original_path) and isfile(original_path):
+                    try:
+                        remove(original_path)
+                    except OSError as error:
+                        print(f"ERROR: Removing original {original_path}: {error}")
+                        return False
 
-            # Remove the original CUE file
-            remove(cue_full_path)
+            # Promote staged files to final names
+            for staged_path, final_path in (
+                (staged_bin_path, final_bin_path),
+                (staged_cue_path, final_cue_path),
+            ):
+                if exists(final_path) and final_path != staged_path:
+                    try:
+                        remove(final_path)
+                    except OSError as error:
+                        print(f"ERROR: Replacing {final_path}: {error}")
+                        return False
+                if not self.move_file(staged_path, final_path):
+                    print(f"ERROR: Promoting staged file to {final_path}")
+                    return False
 
-            # Remove the original multi-bin files
-            for original_bin_file in game.get_cue_sheet().get_bin_files():
-                remove(original_bin_file.get_file_path())
+            if not (exists(final_bin_path) and exists(final_cue_path)):
+                print(f"ERROR: Final merged files missing for {game_name}")
+                return False
 
-            # Move the merged Bin file and the newly generated CUE file into the game directory
-            self.move_file(temp_bin_path, join(game_full_path, f'{game_name}.bin'))
-            self.move_file(temp_cue_path, join(game_full_path, cue_file_name))
+            # Update the cuesheet object to point at the merged BIN
+            cuesheet.set_bin_files([Binfile(f'{game_name}.bin', final_bin_path)])
+            return True
 
-            # Update the cuesheet object to have a single Binfile
-            cuesheet.set_bin_files([bin_files[0]])
-
-        # Remove the temporary directory
-        rmtree(temp_game_dir)
+        finally:
+            # Clean up staging leftovers and the temporary merge directory
+            for leftover in (staged_bin_path, staged_cue_path):
+                if exists(leftover):
+                    try:
+                        remove(leftover)
+                    except OSError:
+                        pass
+            if exists(temp_game_dir):
+                rmtree(temp_game_dir, ignore_errors=True)
     # ************************************************************************************
 
 
