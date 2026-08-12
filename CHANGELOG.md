@@ -13,6 +13,7 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 - **Docker** — no root-level `Dockerfile`; Compose remains the supported entry point (`docker compose up --build`)
+- **Packaging** — `.cursor/` rules are local-only (gitignored / export-ignored); not included in releases
 
 ## [0.1.0] — 2026-08-12
 

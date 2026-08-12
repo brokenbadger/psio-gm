@@ -1,0 +1,2 @@
+# Exclude editor-only paths from `git archive` / GitHub source release zips
+.cursor/ export-ignore

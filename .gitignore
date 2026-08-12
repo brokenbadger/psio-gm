@@ -8,6 +8,9 @@ __pycache__/
 venv/
 psio_gm_env/
 
+# Local Cursor / editor guidance (not part of the product release)
+.cursor/
+
 # Local game library mount for Docker Compose
 games/
 
