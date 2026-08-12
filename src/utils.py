@@ -4,7 +4,7 @@ from os.path import exists, join, dirname, splitext, isfile, isabs, getsize
 from re import search, sub
 from shutil import copyfile, copy2, move, rmtree
 from typing import Optional
-from pathlib2 import Path
+from pathlib import Path
 
 # Local imports
 from game_files import Game, Binfile, Track

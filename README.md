@@ -2,7 +2,7 @@
 Prepare PlayStation 1 bin/cue games for use with a PSIO device.<br>
 The only PSIO app that does everything for your autonomously.<br>
 
-![alt text](https://github.com/logi-26/psio-game-manager/blob/v0.2/image.png?raw=true)
+![alt text](image.png)
 
 **This application:**<br/>
 Organises and standardises PlayStation 1 games into a format acceptable by the PSIO device. It performs the following tasks:<br/>
@@ -12,7 +12,7 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 - Merges all multi-bin games into single bin files.
 - Generates CU2 files for all games that use CDDA audio.
 - Adds game cover images for games that do not have them.
-- Ensures that game names are not greater than 60 characters and do not contain invalid characters.
+- Ensures that game names are not greater than 56 characters and do not contain invalid characters.
 - Generates the MULTIDISC.LST file for all multi-disc games and organises them into a single directory.
 - Detects and patches games that use LibCrypt.
 - OPTIONAL:
@@ -263,15 +263,15 @@ https://github.com/logi-26/psio-game-manager/releases/tag/V0.3<br/>
 </details>
 
 ## Dependencies
-This project requires Python 3 and the following Python packages:
-- `ttkbootstrap`
-- `pathlib2`
+This project requires **Python 3.9+** (with Tkinter) and:
+- `ttkbootstrap` (pulls in `pillow`)
 
 ### Installation Steps for running the Python scripts
 
 1. **Install Python 3**:
    - Download and install Python 3 from the official website: https://www.python.org/downloads/
    - Ensure Python 3 is added to your system PATH.
+   - On Linux, also install Tk support (e.g. `python3-tk` / `tk`).
 
 2. **Install pip**:
    - Pip is usually included with Python 3. To check if pip is installed, run:
@@ -280,9 +280,7 @@ This project requires Python 3 and the following Python packages:
      ```
    - If pip is not installed, you can install it by following the instructions here: https://pip.pypa.io/en/stable/installation/
 
-3. **Set up a virtual environment or use a Docker container**:
-   
-    **To create and run the app in a Python virtual environment, follow these steps**:
+3. **Set up a virtual environment**:
      - Create a virtual environment:
        ```bash
        python -m venv psio_game_manager_env
@@ -296,31 +294,22 @@ This project requires Python 3 and the following Python packages:
          ```bash
          source psio_game_manager_env/bin/activate
          ```
-       - On Linux (alternative method):
-         ```bash
-         . psio_game_manager_env/bin/activate
-         ```
       - Install dependencies in the virtual environment:
         ```bash
         pip install -r requirements.txt
         ```
-      - Navigate to the `src` directory where `psio_game_manager.py` is located.
-      - Run the script using Python:
+      - Run the script (resources resolve relative to the script directory, not your CWD):
         ```bash
-        python psio_game_manager.py
+        python src/psio_game_manager.py
         ```
 
-    **To create and run the app in a Docker container, follow these steps**:
-      - Download and install Docker Desktop from the official website: https://docs.docker.com/desktop/
-      - Open a terminal in your project directory and run:
+    **Docker (optional, not recommended for GUI use)**:
+      - This app needs a display. Prefer a local venv unless you already know how to forward X11/Wayland into a container.
+      - Build:
         ```bash
         docker build -t psio-game-manager-app .
         ```
-        This builds an image named psio-game-manager-app
-      - Run the container with:
-        ```bash
-        docker run psio-game-manager-app
-        ```
+      - Run only if you have display forwarding configured for your host.
 
 ## Usage
 1. **Using the GUI**:
@@ -332,7 +321,7 @@ This project requires Python 3 and the following Python packages:
 2. **OPTIONAL: Run the application with debug print logs**:
    - Run the script using the -d commandline argument:
      ```bash
-     python psio_game_manager.py -d
+     python src/psio_game_manager.py -d
      ```
 
    - Run the exe using the -d commandline argument:
@@ -345,7 +334,8 @@ This project requires Python 3 and the following Python packages:
      ```bash
      pip install pyinstaller
      ```
-   - Build the executable and bundle the app icon and single database file:
+   - From the `src` directory, first launch once so `data/psio_assist.db` is merged from the split parts, then build:
      ```bash
-     pyinstaller --onefile --add-data "data\\psio_assist.db;data" --add-data "icon.ico;." --icon=icon.ico --noconsole --distpath builds/windows psio_game_manager.py
+     pyinstaller --onefile --add-data "data/psio_assist.db:data" --add-data "icon.ico:." --icon=icon.ico --noconsole --distpath builds/windows psio_game_manager.py
      ```
+     On Windows, use `;` instead of `:` in `--add-data` separators.

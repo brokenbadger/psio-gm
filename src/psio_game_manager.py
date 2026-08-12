@@ -2,7 +2,7 @@
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
+#  the Free Software Foundation; either version 3 of the License, or
 #  (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
@@ -55,7 +55,7 @@ from tkinter import Menu, filedialog, StringVar, BooleanVar, TclError, PhotoImag
 from ttkbootstrap import Window, Floodgauge, Treeview, Style, Scrollbar, Labelframe, Label, Button, NO, CENTER, VERTICAL
 from ttkbootstrap.dialogs import MessageDialog
 from ttkbootstrap.constants import DISABLED
-from pathlib2 import Path
+from pathlib import Path
 
 # Local classes
 from game_files import Game, Cuesheet, Binfile
@@ -76,8 +76,6 @@ class PSIOGameManager:
 
         self.game_list = []
         self.script_root_dir = Path(abspath(dirname(sys.argv[0])))
-        self.covers_path = join(dirname(self.script_root_dir), 'covers')
-        self.error_log_file = join(dirname(self.script_root_dir), 'errors.txt')
         self.config_file_path = join(self.script_root_dir, 'config')
 
         # Set debug mode based on the parsed command-line arguments
@@ -105,7 +103,6 @@ class PSIOGameManager:
         self.window = None
         self.icon = None
         self.src_path = None
-        self.dest_path = None
         self.redump_rename = None
 
         # GUI elements
@@ -123,11 +120,11 @@ class PSIOGameManager:
     def _resource_path(self, relative_path):
         """Get the absolute path to resources, works for scripts and the bundled exe"""
         if hasattr(sys, '_MEIPASS'):
-            # Running as an exe
+            # Running as a PyInstaller bundle
             base_path = sys._MEIPASS
         else:
-            # Running as a script
-            base_path = abspath(".")
+            # Running as a script — resolve relative to this file's directory, not CWD
+            base_path = str(self.script_root_dir)
         return join(base_path, relative_path)
     # ************************************************************************************
 
@@ -549,7 +546,7 @@ class PSIOGameManager:
             # Check if the games is a multi-disc game and if an LST file is available
             lst_present = "*"
             if game.get_disc_number() > 0:
-                lst_present = "yes" if game.get_multi_disc_file_present() else "No"
+                lst_present = "Yes" if game.get_multi_disc_file_present() else "No"
 
             # Check if the cover art is available
             bmp_present = bools[game.get_cover_art_present()]
@@ -662,7 +659,10 @@ class PSIOGameManager:
 
     def _browse_button_clicked(self):
         """Handle browse button click"""
-        selected_path = filedialog.askdirectory(initialdir='/', title='Select Game Directory')
+        selected_path = filedialog.askdirectory(
+            initialdir=str(Path.home()),
+            title='Select Game Directory'
+        )
         self.src_path.set(selected_path)
         self.label_src.configure(text= f"  {self.src_path.get()}")
         self._parse_game_list()
@@ -717,7 +717,6 @@ class PSIOGameManager:
 
         # Initialise Tkinter variables
         self.src_path = StringVar(self.window)
-        self.dest_path = StringVar(self.window)
         self.redump_rename = BooleanVar(self.window)
         self.crc_check = BooleanVar(self.window)
 
@@ -737,7 +736,7 @@ class PSIOGameManager:
 
         # Redump rename Checkbox
         def toggle_redump_rename():
-            print(f"CRC Check is now: {self.redump_rename.get()}")
+            print(f"Auto Rename is now: {self.redump_rename.get()}")
 
         file_menu.add_checkbutton(
             label="Auto Rename",
@@ -769,7 +768,7 @@ class PSIOGameManager:
         menubar.add_cascade(label="Options", menu=file_menu, underline=0)
 
         help_menu = Menu(menubar, tearoff=0)
-        help_menu.add_command(label='About')
+        help_menu.add_command(label='About', command=self._show_about)
         menubar.add_cascade(label="Help", menu=help_menu, underline=0)
 
         # Browse frame
@@ -885,7 +884,27 @@ class PSIOGameManager:
         self.button_start = Button(self.window, text='Process', command=self._start_button_clicked, state=DISABLED)
         self.button_start.place(x=30, y=frame_y +100, width=window_width -50, height=30)
 
-        self.label_progress.after(1000, self.db.ensure_database_exists())
+        # Ensure the game database is available before the user starts browsing
+        self.db.ensure_database_exists()
+    # ************************************************************************************
+
+
+    # ************************************************************************************
+    def _show_about(self):
+        """Show the About dialog"""
+        message = (
+            f"PSIO Game Manager v{self.CURRENT_REVISION}\n\n"
+            "Prepare PlayStation 1 bin/cue games for use with a PSIO device.\n\n"
+            "Copyright (C) 2021 LoGi26\n"
+            "Licensed under the GNU General Public License v3.0"
+        )
+        md = MessageDialog(
+            message,
+            title='About',
+            width=500,
+            padding=(20, 20)
+        )
+        md.show()
     # ************************************************************************************
 
 

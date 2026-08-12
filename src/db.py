@@ -63,7 +63,7 @@ class GameDatabase:
                 with open(part_path, 'rb') as infile:
                     outfile.write(infile.read())
 
-        self._delete_database_splits()
+        # Keep the split parts so fresh checkouts / reinstalls remain redistributable
     # ************************************************************************************
 
 
