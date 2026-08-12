@@ -6,7 +6,11 @@
 # Linux (X11):
 #   mkdir -p games   # or set PSIO_GAMES_DIR to your library
 #   xhost +local:docker
-#   PSIO_GAMES_DIR=/path/to/your/ps1/games docker compose up --build
+#   docker compose up --build
+#
+#   # Custom games folder (use ./ or an absolute path — bare names are treated as volumes):
+#   PSIO_GAMES_DIR=./psio_games_test_folder docker compose up --build
+#   PSIO_GAMES_DIR=/home/you/ps1/games docker compose up --build
 #
 # Then Browse to /games inside the app (or a subdirectory under it).
 #
@@ -18,17 +22,26 @@ name: psio-gm
 services:
   psio-gm:
     build: .
-    image: psio-gm-app
+    image: psio-gm-app:0.1
     container_name: psio-gm
     environment:
       DISPLAY: ${DISPLAY:-:0}
       XAUTHORITY: /root/.Xauthority
     volumes:
       # X11 socket + auth cookie for the GUI
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ${XAUTHORITY:-${HOME}/.Xauthority}:/root/.Xauthority:ro
-      # Your PS1 game library (override with PSIO_GAMES_DIR)
-      - ${PSIO_GAMES_DIR:-./games}:/games:rw
+      - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+      - type: bind
+        source: ${XAUTHORITY:-${HOME}/.Xauthority}
+        target: /root/.Xauthority
+        read_only: true
+      # Your PS1 game library (override with PSIO_GAMES_DIR; must be ./relative or absolute)
+      - type: bind
+        source: ${PSIO_GAMES_DIR:-./games}
+        target: /games
+        bind:
+          create_host_path: true
     working_dir: /app/src
     # Shared memory helps Tk/X11 avoid rendering glitches
     ipc: host

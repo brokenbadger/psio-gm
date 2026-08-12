@@ -68,7 +68,7 @@ from crc_32 import CrcFileVerifier
 
 
 class PSIOGM:
-    CURRENT_REVISION = 0.3
+    CURRENT_REVISION = 0.1
     MAX_GAME_NAME_LENGTH = 56
 
     def __init__(self, args=None):
@@ -893,9 +893,13 @@ class PSIOGM:
     def _show_about(self):
         """Show the About dialog"""
         message = (
-            f"PSIO-GM v{self.CURRENT_REVISION}\n\n"
-            "Prepare PlayStation 1 bin/cue games for use with a PSIO device.\n\n"
+            f"PSIO-GM v{self.CURRENT_REVISION}\n"
+            "Prepare PlayStation 1 bin/cue games for use with a PSIO device.\n"
+            "Based on PSIO Game Manager\n"
             "Copyright (C) 2021 LoGi26\n"
+            "Licensed under the GNU General Public License v3.0\n"
+            "PSIO-GM Forked by brokenbadger\n"
+            "Copyright (C) 2026 brokenbadger\n"
             "Licensed under the GNU General Public License v3.0"
         )
         md = MessageDialog(

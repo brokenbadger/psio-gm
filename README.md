@@ -1,4 +1,6 @@
 # PSIO-GM
+**Version 0.1**
+
 Prepare PlayStation 1 bin/cue games for use with a PSIO device.<br>
 The only PSIO app that does everything for your autonomously.<br>
 
@@ -304,15 +306,20 @@ This project requires **Python 3.9+** (with Tkinter) and:
 
     **Docker Compose (optional, needs X11)**:
       - Prefer a local venv unless you already know how to forward a display into a container.
-      - Put games under `./games` (or set `PSIO_GAMES_DIR`), then on Linux:
+      - Put games under `./games` (or set `PSIO_GAMES_DIR` to a `./relative` or absolute path), then on Linux:
         ```bash
         mkdir -p games
         xhost +local:docker
         docker compose up --build
         ```
+      - Custom folder example (the `./` is required, or Compose treats the name as a volume):
+        ```bash
+        mkdir -p psio_games_test_folder
+        PSIO_GAMES_DIR=./psio_games_test_folder docker compose up --build
+        ```
       - In the app, browse to `/games`.
       - When finished: `xhost -local:docker`
-      - Equivalent image-only build: `docker build -t psio-gm-app .`
+      - Equivalent image-only build: `docker build -t psio-gm-app:0.1 .`
 
 ## Usage
 1. **Using the GUI**:
