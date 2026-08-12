@@ -13,11 +13,13 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 - **Docker** — no root-level `Dockerfile`; Compose remains the supported entry point (`docker compose up --build`)
-- **Packaging** — `.cursor/` rules are local-only (gitignored / export-ignored); not included in releases
 
 ## [0.1.0] — 2026-08-12
 
 First PSIO-GM release on branch `v0.1` (release tag **`v0.1.0`** — kept distinct from the branch name to avoid Git ref ambiguity).
+
+### Packaging
+- **Cursor rules excluded** — `.cursor/` is local-only (gitignored / export-ignored) and is not included in the release source archive
 
 ### Security / data safety
 - **Safe multi-BIN merge** — merged BIN/CUE files are staged and verified before originals are deleted ([#1](https://github.com/brokenbadger/psio-gm/issues/1), `5d5e8dc`)
