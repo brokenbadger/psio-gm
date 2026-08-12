@@ -475,7 +475,11 @@ class Utils:
 
     # ************************************************************************************
     def collect_multi_games(self, game: Game, game_list: list):
-        """Collect all games in the disc collection."""
+        """Collect all games in the disc collection.
+
+        Returns a list that may contain None for discs that were not scanned.
+        Callers must treat any None as an incomplete collection.
+        """
         disc_collection = game.get_disc_collection()
 
         if disc_collection is None:
@@ -525,11 +529,12 @@ class Utils:
                     for filename in listdir(disc_path):
                         source_path = join(disc_path, filename)
                         target_path = join(new_game_path, filename)
-                        file_no_ext = splitext(filename)[0]
+                        file_no_ext, file_ext = splitext(filename)
 
-                        # Move the files and update the Game paths
+                        # Move the files and update BIN/CUE paths only from those files
                         self.move_file(source_path, target_path)
-                        self.update_game_paths(multi_disc, new_game_path, game_folder, file_no_ext)
+                        if file_ext.lower() in ('.bin', '.cue'):
+                            self.update_game_paths(multi_disc, new_game_path, game_folder, file_no_ext)
 
                     rmtree(disc_path)
     # ************************************************************************************
@@ -599,14 +604,25 @@ class Utils:
                 continue
 
             multi_games = self.collect_multi_games(game, game_list)
-            if len(multi_games) <= 1:
+            expected_count = len(game.get_disc_collection() or [])
+            found_games = [disc for disc in multi_games if disc is not None]
+
+            # Require every disc in the collection to be present before folding/LST
+            if None in multi_games or len(found_games) <= 1:
+                missing = expected_count - len(found_games)
+                game_name = game.get_cue_sheet().get_game_name()
+                print(
+                    f"ERROR: Incomplete multi-disc collection for '{game_name}' "
+                    f"(found {len(found_games)}/{expected_count}, missing {missing}); "
+                    f"skipping MULTIDISC.LST generation"
+                )
                 continue
 
             # Move the game files into a single directory and create the LST file
-            new_game_path = self.create_multi_disc_folder(multi_games)
-            self.process_disc_files(multi_games, new_game_path)
-            self.generate_lst_file(multi_games)
-            self.copy_multi_disc_cover_art(game, multi_games)
+            new_game_path = self.create_multi_disc_folder(found_games)
+            self.process_disc_files(found_games, new_game_path)
+            self.generate_lst_file(found_games)
+            self.copy_multi_disc_cover_art(game, found_games)
     # ************************************************************************************
 
 

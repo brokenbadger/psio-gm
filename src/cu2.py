@@ -142,11 +142,16 @@ class Cu2Generator:
     # ************************************************************************************
     def _get_track_index(self, cue_content: list, track: int) -> tuple:
         """Find the index positions (00 and 01) for a given track"""
+        # Match TRACK <n> as a whole token so track 1 does not match TRACK 10/11/...
+        track_pattern = compile(rf'(?i)^\s*TRACK\s+0*{track}\s')
+        index00_pattern = compile(r'(?i)^\s*INDEX\s+0*0\b')
+        index01_pattern = compile(r'(?i)^\s*INDEX\s+0*1\b')
+
         for i, line in enumerate(cue_content):
-            if compile(f'.*[Tt][Rr][Aa][Cc][Kk] 0?{track}.*').match(line):
-                index_00 = cue_content[i + 1][::-1][:8][::-1] if i + 1 < len(cue_content) and compile('.*[Ii][Nn][Dd][Ee][Xx] 0?0.*').match(cue_content[i + 1]) else None
-                index_01 = cue_content[i + 1][::-1][:8][::-1] if i + 1 < len(cue_content) and compile('.*[Ii][Nn][Dd][Ee][Xx] 0?1.*').match(cue_content[i + 1]) else \
-                           cue_content[i + 2][::-1][:8][::-1] if i + 2 < len(cue_content) and compile('.*[Ii][Nn][Dd][Ee][Xx] 0?1.*').match(cue_content[i + 2]) else None
+            if track_pattern.match(line):
+                index_00 = cue_content[i + 1][::-1][:8][::-1] if i + 1 < len(cue_content) and index00_pattern.match(cue_content[i + 1]) else None
+                index_01 = cue_content[i + 1][::-1][:8][::-1] if i + 1 < len(cue_content) and index01_pattern.match(cue_content[i + 1]) else \
+                           cue_content[i + 2][::-1][:8][::-1] if i + 2 < len(cue_content) and index01_pattern.match(cue_content[i + 2]) else None
                 return index_00, index_01
         return None, None
     # ************************************************************************************

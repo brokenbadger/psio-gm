@@ -121,6 +121,8 @@ class PPFProcessor:
         else:  # PPF3
             ppf_file.seek(57)
             block_check = ppf_file.read(1)[0]
+            ppf_file.seek(58)
+            undo = ppf_file.read(1)[0]
             id_len = self._show_file_id(ppf_file, 3)
             seek_pos = 1084 if block_check else 60
             count = ppf_file.seek(0, SEEK_END) - seek_pos
@@ -161,9 +163,10 @@ class PPFProcessor:
             seek_pos += offset_size + 1 + anz
             count -= offset_size + 1 + anz
 
-            # Skip the undo data in PPF3 patch files if present
-            if ppf_ver == 3:
+            # Skip undo data in PPF3 only when the patch actually contains it
+            if ppf_ver == 3 and undo:
                 ppf_file.seek(anz, SEEK_CUR)
+                seek_pos += anz
                 count -= anz
 
         self._debug_print("All patch bytes match. Patch is already applied.")
