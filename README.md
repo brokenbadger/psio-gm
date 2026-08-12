@@ -333,7 +333,7 @@ This project requires **Python 3.9+** (with Tkinter) and:
         ```
       - In the app, browse to `/games`.
       - When finished: `xhost -local:docker`
-      - The image is built by Compose (`dockerfile_inline` in `docker-compose.yml`); there is no separate Dockerfile.
+      - Compose builds from `docker/Dockerfile` (no root-level Dockerfile).
 
 ## Usage
 1. **Using the GUI**:

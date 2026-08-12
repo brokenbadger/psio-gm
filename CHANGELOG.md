@@ -8,8 +8,11 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+- **Docker Compose build** — use `docker/Dockerfile` referenced from Compose instead of `dockerfile_inline` (requires Buildx and failed on hosts without it)
+
 ### Changed
-- **Docker** — removed the standalone `Dockerfile`; the image is defined inline in `docker-compose.yml` so Compose is the single Docker entry point
+- **Docker** — no root-level `Dockerfile`; Compose remains the supported entry point (`docker compose up --build`)
 
 ## [0.1.0] — 2026-08-12
 
