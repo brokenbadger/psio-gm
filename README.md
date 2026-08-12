@@ -2,7 +2,7 @@
 **Version 0.1**
 
 Prepare PlayStation 1 bin/cue games for use with a PSIO device.<br>
-The only PSIO app that does everything for your autonomously.<br>
+The all-in-one solution to preparing your PSIO collection.<br>
 
 ![alt text](image.png)
 
