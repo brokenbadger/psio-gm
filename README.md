@@ -6,6 +6,20 @@ The only PSIO app that does everything for your autonomously.<br>
 
 ![alt text](image.png)
 
+## About this fork
+**PSIO-GM** is a maintained fork of [logi-26/psio-game-manager](https://github.com/logi-26/psio-game-manager).
+
+Compared with upstream at the time of forking, v0.1 includes:
+
+- Safer multi-BIN merging (no delete-before-verify)
+- Per-game batch error handling with a summary dialog
+- Fixes for CU2 track matching, incomplete multi-disc sets, and PPF3 undo detection
+- Script-relative resource/DB paths (run from any working directory)
+- Rebrand (`psio_gm.py` / PSIO-GM), trimmed dependencies, Docker Compose + fixed Dockerfile
+- Updated About credits for upstream and this fork
+
+Full detail: [CHANGELOG.md](CHANGELOG.md). Audit/fix tracking: [GitHub Issues](https://github.com/brokenbadger/psio-gm/issues).
+
 **This application:**<br/>
 Organises and standardises PlayStation 1 games into a format acceptable by the PSIO device. It performs the following tasks:<br/>
 
