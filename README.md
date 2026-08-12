@@ -19,10 +19,6 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 - Rename all games using the game names from the PlayStation Redump project.
 - Performs CRC-32 checks of each data track using data from the PlayStation Redump project.
 
-## Windows Users
-There is a Windows exe file:<br/>
-https://github.com/logi-26/psio-game-manager/releases/tag/V0.3<br/>
-
 ## Notes
   - For best performance, use the application with your games stored on a PC HDD and then transfer to an SD card.
   - The application requires the games cue sheet to identify the game.
