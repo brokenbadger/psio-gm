@@ -15,7 +15,7 @@ Compared with upstream at the time of forking, v0.1 includes:
 - Per-game batch error handling with a summary dialog
 - Fixes for CU2 track matching, incomplete multi-disc sets, and PPF3 undo detection
 - Script-relative resource/DB paths (run from any working directory)
-- Rebrand (`psio_gm.py` / PSIO-GM), trimmed dependencies, Docker Compose + fixed Dockerfile
+- Rebrand (`psio_gm.py` / PSIO-GM), trimmed dependencies, Docker Compose
 - Updated About credits for upstream and this fork
 
 Full detail: [CHANGELOG.md](CHANGELOG.md). Audit/fix tracking: [GitHub Issues](https://github.com/brokenbadger/psio-gm/issues).
@@ -333,7 +333,7 @@ This project requires **Python 3.9+** (with Tkinter) and:
         ```
       - In the app, browse to `/games`.
       - When finished: `xhost -local:docker`
-      - Equivalent image-only build: `docker build -t psio-gm-app:0.1 .`
+      - The image is built by Compose (`dockerfile_inline` in `docker-compose.yml`); there is no separate Dockerfile.
 
 ## Usage
 1. **Using the GUI**:

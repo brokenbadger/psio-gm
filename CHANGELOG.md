@@ -6,6 +6,11 @@ The project is based on [logi-26/psio-game-manager](https://github.com/logi-26/p
 
 Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Changed
+- **Docker** — removed the standalone `Dockerfile`; the image is defined inline in `docker-compose.yml` so Compose is the single Docker entry point
+
 ## [0.1.0] — 2026-08-12
 
 First PSIO-GM release on branch `v0.1` (release tag **`v0.1.0`** — kept distinct from the branch name to avoid Git ref ambiguity).
