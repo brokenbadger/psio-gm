@@ -87,7 +87,7 @@
               <td>{% if not g.cu2_required %}*{% elif g.cu2_present %}Yes{% else %}No{% endif %}</td>
               <td>{% if not g.multi_disc %}*{% elif g.lst_present %}Yes{% else %}No{% endif %}</td>
               <td>{% if not g.libcrypt_required %}*{% elif g.libcrypt_applied %}Yes{% else %}No{% endif %}</td>
-              <td>{% if g.crc_valid is none %}—{% elif g.crc_valid %}Yes{% else %}No{% endif %}</td>
+              <td>{% if g.crc_valid is sameas true %}Yes{% elif g.crc_valid is sameas false %}No{% else %}—{% endif %}</td>
             </tr>
             {% else %}
             <tr class="empty"><td colspan="9">No games loaded.</td></tr>

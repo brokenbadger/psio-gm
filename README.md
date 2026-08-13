@@ -1,5 +1,5 @@
 # PSIO-GM
-**Version 0.2 (development)**
+**Version 0.2.0**
 
 Prepare PlayStation 1 bin/cue games for use with a PSIO device.<br>
 The all-in-one solution to preparing your PSIO collection.<br>
@@ -9,7 +9,7 @@ The all-in-one solution to preparing your PSIO collection.<br>
 ## About this fork
 **PSIO-GM** is a maintained fork of [logi-26/psio-game-manager](https://github.com/logi-26/psio-game-manager).
 
-**v0.1** is the stable Tk desktop line. **v0.2** (this branch) adds a headless library core shared by the Tk GUI and a Flask web UI.
+**v0.2** is the current default line (headless library core, Tk GUI, and Flask web UI). **v0.1** remains available as the prior stable Tk-only line.
 
 Compared with upstream at the time of forking, this fork includes:
 
@@ -47,6 +47,10 @@ Windows builds will be published on the [PSIO-GM releases](https://github.com/br
   - The application requires the games cue sheet to identify the game.
   - If a game is a single disc game the disc number will be displayed as zero.
   - CRC checks make the process a lot slower (turned off by default).
+  - If CRC check is off the CRC column shows an asterisk.
+  - If CRC check is on and tracks match Redump the CRC column shows "Yes".
+  - If CRC check is on and tracks do not match Redump the CRC column shows "No".
+  - If CRC check is on but the database has no Redump track data for that game the CRC column shows an em dash (—), not "No".
 ##### Multi-disc LST
   - If a game is not part of a collection the LST will be displayed with an asterisk.
   - If a game is part of a collection and an LST file is not present the LST will be displayed with "No".

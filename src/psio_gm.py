@@ -463,7 +463,15 @@ class PSIOGM:
             libcrypt_patch = "Yes" if game.get_libcrypt_applied() else "No"
 
         # Check if the CRC-32 matches the data from the PlayStation Redump project
-        crc_32 = "*" if not self.crc_check.get() else "Yes" if game.get_crc_valid() else "No"
+        # * = check off; Yes/No = result; — = no Redump track data in DB
+        if not self.crc_check.get():
+            crc_32 = "*"
+        elif game.get_crc_valid() is True:
+            crc_32 = "Yes"
+        elif game.get_crc_valid() is False:
+            crc_32 = "No"
+        else:
+            crc_32 = "—"
 
         # Update the existing row in the Treeview
         try:
@@ -510,10 +518,15 @@ class PSIOGM:
                 libcrypt_patch = "Yes" if game.get_libcrypt_applied() else "No"
 
             # Check if the CRC-32 matches the data from the PlayStation Redump project
-            if self.crc_check.get():
-                crc_32 = "Yes" if game.get_crc_valid() else "No"
-            else:
+            # * = check off; Yes/No = result; — = no Redump track data in DB
+            if not self.crc_check.get():
                 crc_32 = "*"
+            elif game.get_crc_valid() is True:
+                crc_32 = "Yes"
+            elif game.get_crc_valid() is False:
+                crc_32 = "No"
+            else:
+                crc_32 = "—"
 
             # Insert the data into the tree-view
             self.treeview_game_list.insert(parent='', index=count, iid=count, text='',

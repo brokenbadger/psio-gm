@@ -106,18 +106,21 @@ class Utils:
 
 
     # ************************************************************************************
-    def crc_check_bin(self, game: Game) -> bool:
-        """Perform CRC-32 check on the BIN file/s and compare to the Redump data"""
-        tracks_valid = False
+    def crc_check_bin(self, game: Game) -> Optional[bool]:
+        """Perform CRC-32 check on the BIN file/s and compare to the Redump data.
 
-        # Get the Redmup track info from the local database
+        Returns:
+            True if all tracks match, False if any mismatch, or None if the
+            database has no Redump track CRC data for this game (cannot verify).
+        """
         redump_tracks = self._get_redump_tracks(game)
+        if not redump_tracks:
+            self._debug_print(
+                f"No Redump track CRC data for {game.get_id()} — CRC check skipped"
+            )
+            return None
 
-        # Verify the tracks using the CUE file and Redump CRC-32 values
-        if redump_tracks:
-            tracks_valid = self.crc_verifier.verify_tracks(game.get_cue_sheet(), redump_tracks)
-
-        return tracks_valid
+        return self.crc_verifier.verify_tracks(game.get_cue_sheet(), redump_tracks)
     # ************************************************************************************
 
 

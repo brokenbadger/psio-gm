@@ -35,8 +35,10 @@
   }
 
   function crcLabel(g) {
-    if (g.crc_valid === null || g.crc_valid === undefined) return "—";
-    return g.crc_valid ? "Yes" : "No";
+    if (g.crc_valid === true) return "Yes";
+    if (g.crc_valid === false) return "No";
+    // null/undefined: CRC not run, or no Redump track data in the database
+    return "—";
   }
 
   function renderSummary(summary) {

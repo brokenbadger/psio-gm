@@ -8,8 +8,13 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-08-13
+
+First **v0.2** line release (tag **`v0.2.0`** on branch `v0.2` — tag kept distinct from the branch name).
+
 ### Fixed
 - **LibCrypt detection** — titles with a PPF in `libcrypt_patches` but a missing/`0` `games.libcrypt` flag (e.g. SCES_02105 CTR Europe) are now treated as LibCrypt-required so the UI shows Yes/No and patches can apply
+- **CRC display** — when Redump track CRC rows are missing from the DB (e.g. SCES_02104 Spyro 2 Europe), the CRC column shows `—` instead of a false `No`
 
 ### Added
 - **Headless core** — `GameLibraryService` (`src/library_service.py`) for scan/process; shared by Tk and web
@@ -20,7 +25,7 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **App revision** — `CURRENT_REVISION = 0.2` on branch `v0.2`
 - **Tk GUI** — scan/process/database ensure delegate to `GameLibraryService`
 - **Dependencies** — add `flask==3.1.2`; keep `ttkbootstrap==2.2.0` and `pillow==12.3.0`
-- **Docs** — README covers web UI and Compose profiles
+- **Docs** — README covers web UI, Compose profiles, and CRC column meanings (`Yes` / `No` / `—` / `*`)
 
 ## [0.1.0] — 2026-08-12
 
