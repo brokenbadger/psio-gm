@@ -8,6 +8,10 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.1.0] — 2026-08-12
+
+Final freeze of the **v0.1** Tk desktop line before branch `v0.2` (release tag **`v0.1.0`** — kept distinct from the branch name to avoid Git ref ambiguity). Web UI / headless core work belongs in **v0.2.0+**.
+
 ### Changed
 - **Dependencies** — `ttkbootstrap==2.2.0` and `pillow==12.3.0` (compatible set; ttkbootstrap requires Python ≥3.10 and pillow≥10,<13)
 - **GUI / ttkbootstrap 2.x** — install legacy themes for saved configs, curated themes in the menu, default theme `bootstrap-dark`, MessageDialog widths use character units
@@ -16,10 +20,6 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 - **Docker Compose build** — use `docker/Dockerfile` referenced from Compose instead of `dockerfile_inline` (requires Buildx and failed on hosts without it)
-
-## [0.1.0] — 2026-08-12
-
-First PSIO-GM release on branch `v0.1` (release tag **`v0.1.0`** — kept distinct from the branch name to avoid Git ref ambiguity).
 
 ### Packaging
 - **Cursor rules excluded** — `.cursor/` is local-only (gitignored / export-ignored) and is not included in the release source archive
