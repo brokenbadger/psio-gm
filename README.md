@@ -7,7 +7,7 @@ The all-in-one solution to preparing your PSIO collection.<br>
 ![alt text](image.png)
 
 ## About this fork
-**PSIO-GM** is a maintained fork of [logi-26/psio-game-manager](https://github.com/logi-26/psio-game-manager).
+**PSIO-GM** is a maintained fork of <a href="https://github.com/logi-26/psio-game-manager" target="_blank" rel="noopener noreferrer">logi-26/psio-game-manager</a>.
 
 **v0.2** runs as a **Docker** web app (Flask UI on localhost). Put games in a host folder, start Compose, open the UI. For the older Tk desktop app, use branch **`v0.1`**.
 
@@ -20,7 +20,7 @@ Compared with upstream at the time of forking, this fork includes:
 - Rebrand (PSIO-GM)
 - **v0.2** — headless `GameLibraryService` + Flask web UI, **Docker Compose as the supported way to run**
 
-Full detail: [CHANGELOG.md](CHANGELOG.md). Issues: [GitHub Issues](https://github.com/brokenbadger/psio-gm/issues).
+Full detail: <a href="CHANGELOG.md" target="_blank" rel="noopener noreferrer">CHANGELOG.md</a>. Issues: <a href="https://github.com/brokenbadger/psio-gm/issues" target="_blank" rel="noopener noreferrer">GitHub Issues</a>.
 
 **This application:**<br/>
 Organises and standardises PlayStation 1 games into a format acceptable by the PSIO device. It performs the following tasks:<br/>
@@ -282,7 +282,7 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 
 ## Run with Docker
 
-You need [Docker Desktop](https://docs.docker.com/get-started/) (Windows, macOS, or Linux) **or** [Docker Engine](https://docs.docker.com/engine/) with [Compose](https://docs.docker.com/compose/) v2.
+You need <a href="https://docs.docker.com/get-started/" target="_blank" rel="noopener noreferrer">Docker Desktop</a> (Windows, macOS, or Linux) **or** <a href="https://docs.docker.com/engine/" target="_blank" rel="noopener noreferrer">Docker Engine</a> with <a href="https://docs.docker.com/compose/" target="_blank" rel="noopener noreferrer">Compose</a> v2.
 
 Processed game files are written as **whoever runs Compose** (not root, and not a fixed account). On Linux/macOS the start commands pass your current `id -u` / `id -g` into the container as `PUID`/`PGID`, so ownership matches that user on any machine.
 
@@ -307,7 +307,7 @@ Processed game files are written as **whoever runs Compose** (not root, and not 
      (Docker Desktop maps bind-mount ownership for you; defaults `PUID=1000` / `PGID=1000` are fine.)
 
    First run builds the image; leave this terminal open while the app is running.
-6. In your browser, open http://127.0.0.1:5000
+6. In your browser, open <a href="http://127.0.0.1:5000" target="_blank" rel="noopener noreferrer">http://127.0.0.1:5000</a>
 7. Stop the app: press `Ctrl+C` in the terminal, or select the compose stack in Docker Desktop and stop it.
 
 **Custom games folder (Docker Desktop)**
@@ -340,7 +340,7 @@ Instead of using `./games` under the repo, point Compose at another folder when 
    ```bash
    PUID=$(id -u) PGID=$(id -g) PSIO_GAMES_DIR=/path/to/your/games docker compose up --build
    ```
-4. Open http://127.0.0.1:5000
+4. Open <a href="http://127.0.0.1:5000" target="_blank" rel="noopener noreferrer">http://127.0.0.1:5000</a>
 5. Stop with `Ctrl+C`, or run `docker compose down`.
 
 ## Usage (web UI)
