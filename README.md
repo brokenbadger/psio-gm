@@ -284,11 +284,7 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 
 Requires [Docker](https://docs.docker.com/get-docker/) with Compose v2.
 
-1. Clone this repo and put (or mount) your PS1 library — one subfolder per game with bin/cue files:
-   ```bash
-   mkdir -p games
-   # or point PSIO_GAMES_DIR at an existing library (see below)
-   ```
+1. Clone this repo. Your PS1 library should be one subfolder per game (bin/cue). By default Compose bind-mounts **`./games`** into the container at `/games` and **creates `./games` on the host if it is missing** — no manual `mkdir` needed. Point `PSIO_GAMES_DIR` at an existing library instead if you prefer (see below).
 
 2. Start the app:
    ```bash
