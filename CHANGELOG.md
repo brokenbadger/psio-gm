@@ -12,6 +12,7 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Web About** — About control in the header shows the same credits as v0.1 (upstream LoGi26 + fork brokenbadger, GPL-3.0)
 
 ### Changed
+- **Web UI** — colour scheme matched to ttkbootstrap **superhero** (same palette as the README screenshot / v0.1 theme menu)
 - **Docs** — Docker Desktop vs Engine ownership guidance clarified; run Compose detached (`-d`) so the terminal can be closed
 - **Docs** — README links back to Markdown (GitHub strips `target="_blank"` from HTML anchors)
 - **Docs** — add day-to-day start/stop via `docker start`/`docker stop` (Compose `up -d` to create)
