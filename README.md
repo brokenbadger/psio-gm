@@ -340,12 +340,7 @@ After the first `docker compose up --build -d`, the container already exists. Da
 
 **Docker Desktop**
 
-- Start (create once, if the container is missing — e.g. after `docker compose down`):
-  ```bash
-  docker compose up -d
-  ```
-  Or create/start the **psio-gm** stack from the Docker Desktop UI.
-- Start (existing container):
+- Start:
   ```bash
   docker start psio-gm
   ```
@@ -357,19 +352,9 @@ After the first `docker compose up --build -d`, the container already exists. Da
   Or stop it in Docker Desktop.
 - Open [http://127.0.0.1:5000](http://127.0.0.1:5000) while it is running.
 
-If you use a custom games folder, set `PSIO_GAMES_DIR` when you run `docker compose up -d` (same as on first start).
-
 **Docker Engine**
 
-- Start (create once, if the container is missing — e.g. after `docker compose down`):
-  ```bash
-  PUID=$(id -u) PGID=$(id -g) docker compose up -d
-  ```
-  With a custom games folder:
-  ```bash
-  PUID=$(id -u) PGID=$(id -g) PSIO_GAMES_DIR=/path/to/your/games docker compose up -d
-  ```
-- Start (existing container):
+- Start:
   ```bash
   docker start psio-gm
   ```
