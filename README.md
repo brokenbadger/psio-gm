@@ -282,11 +282,11 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 
 ## Run with Docker
 
-You need [Docker Desktop](https://docs.docker.com/desktop/) (Windows, macOS, or Linux) **or** Docker Engine with Compose v2.
+You need [Docker Desktop](https://docs.docker.com/get-started/) (Windows, macOS, or Linux) **or** Docker Engine with Compose v2.
 
 ### Docker Desktop
 
-1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) and start it (wait until it shows **Running**).
+1. Install Docker Desktop and start it (wait until it shows **Running**).
 2. Clone this repository to your PC (GitHub Desktop, `git clone`, or download the ZIP and extract it).
 3. Put your PS1 games in a `games` folder inside the repo (one subfolder per game, each with bin/cue files).  
    Example: `psio-gm/games/Crash Bandicoot/...`
