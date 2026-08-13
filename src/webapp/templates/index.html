@@ -8,8 +8,13 @@
 </head>
 <body>
   <header class="top">
-    <h1>PSIO-GM</h1>
-    <p class="tagline">Prepare PlayStation 1 bin/cue games for PSIO — web UI (localhost)</p>
+    <div class="top-row">
+      <div>
+        <h1>PSIO-GM</h1>
+        <p class="tagline">Prepare PlayStation 1 bin/cue games for PSIO — web UI (localhost)</p>
+      </div>
+      <button type="button" class="linkish" id="about-btn" aria-haspopup="dialog" aria-controls="about-dialog">About</button>
+    </div>
   </header>
 
   <main>
@@ -96,8 +101,26 @@
   </main>
 
   <footer>
-    <p>PSIO-GM v0.2.2 · binds to localhost by default · GPL-3.0</p>
+    <p>PSIO-GM v{{ app_version }} · binds to localhost by default · GPL-3.0</p>
   </footer>
+
+  <dialog id="about-dialog" class="about-dialog" aria-labelledby="about-title">
+    <form method="dialog" class="about-panel">
+      <h2 id="about-title">About</h2>
+      <div class="about-body">
+        <p><strong>PSIO-GM v{{ app_version }}</strong><br>
+        Prepare PlayStation 1 bin/cue games for use with a PSIO device.</p>
+        <p>Based on PSIO Game Manager<br>
+        Copyright (C) 2021 LoGi26<br>
+        Licensed under the GNU General Public License v3.0</p>
+        <p>PSIO-GM Forked by brokenbadger<br>
+        Copyright (C) 2026 brokenbadger<br>
+        Licensed under the GNU General Public License v3.0</p>
+      </div>
+      <button type="submit" value="close" class="about-close">Close</button>
+    </form>
+  </dialog>
+
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

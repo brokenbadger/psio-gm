@@ -195,4 +195,12 @@
       setMsg(err.message, "error");
     }
   });
+
+  const aboutBtn = document.getElementById("about-btn");
+  const aboutDialog = document.getElementById("about-dialog");
+  if (aboutBtn && aboutDialog) {
+    aboutBtn.addEventListener("click", () => {
+      aboutDialog.showModal();
+    });
+  }
 })();

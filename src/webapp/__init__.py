@@ -10,6 +10,8 @@ from flask import Flask, jsonify, render_template, request
 from library_service import DatabaseError, GameLibraryService
 from webapp.jobs import ProcessJobManager
 
+APP_VERSION = "0.2.2"
+
 
 def _library_root() -> Path | None:
     """Allowlist root (e.g. /games in Docker)."""
@@ -50,6 +52,7 @@ def create_app(service: GameLibraryService | None = None) -> Flask:
         svc: GameLibraryService = app.config["SERVICE"]
         return render_template(
             "index.html",
+            app_version=APP_VERSION,
             games=svc.games_as_dicts(),
             summary=svc.summarize() if svc.game_list else None,
         )

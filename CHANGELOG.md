@@ -8,8 +8,8 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Fixed
-- **Docker non-root** — image runs as user `psio` (uid 1000), not root; Compose sets `PUID`/`PGID` so processed game folders under the bind mount match the host user
+### Added
+- **Web About** — About control in the header shows the same credits as v0.1 (upstream LoGi26 + fork brokenbadger, GPL-3.0)
 
 ### Changed
 - **Docs** — add step-by-step Docker Desktop instructions (including Windows path examples)
