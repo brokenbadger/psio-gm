@@ -282,7 +282,7 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 
 ## Run with Docker
 
-You need [Docker Desktop](https://docs.docker.com/get-started/) (Windows, macOS, or Linux) **or** Docker Engine with Compose v2.
+You need [Docker Desktop](https://docs.docker.com/get-started/) (Windows, macOS, or Linux) **or** [Docker Engine](https://docs.docker.com/engine/) with [Compose](https://docs.docker.com/compose/) v2.
 
 ### Docker Desktop
 
@@ -298,8 +298,7 @@ You need [Docker Desktop](https://docs.docker.com/get-started/) (Windows, macOS,
    ```
    First run builds the image; leave this terminal open while the app is running.
 6. In your browser, open http://127.0.0.1:5000
-7. Click **Scan**, then **Process**.
-8. Stop the app: press `Ctrl+C` in the terminal, or select the compose stack in Docker Desktop and stop it.
+7. Stop the app: press `Ctrl+C` in the terminal, or select the compose stack in Docker Desktop and stop it.
 
 **Custom games folder (Docker Desktop)**
 
@@ -332,8 +331,7 @@ Instead of using `./games` under the repo, point Compose at another folder when 
    PSIO_GAMES_DIR=/path/to/your/games docker compose up --build
    ```
 4. Open http://127.0.0.1:5000
-5. Click **Scan**, then **Process**.
-6. Stop with `Ctrl+C`, or run `docker compose down`.
+5. Stop with `Ctrl+C`, or run `docker compose down`.
 
 ## Usage (web UI)
 
