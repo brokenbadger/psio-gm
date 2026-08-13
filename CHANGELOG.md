@@ -9,7 +9,8 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
-- **Docs** — drop redundant `mkdir -p games`; Compose already creates `./games` via `create_host_path`
+- **Web UI** — removed library path field; Scan always uses the mounted library (`PSIO_DEFAULT_LIBRARY`, default `/games`)
+- **Docs** — Docker and web usage steps updated for the fixed library mount
 
 ## [0.2.2] — 2026-08-13
 

@@ -1,7 +1,7 @@
 # PSIO-GM — Docker Compose (supported run path)
 #
 #   docker compose up --build
-#   Open http://127.0.0.1:5000 — library path is prefilled as /games
+#   Open http://127.0.0.1:5000 — Scan / Process (library is ./games → /games)
 #   (./games is bind-mounted and created on the host if missing)
 #
 # Custom games folder (prefer ./relative or absolute path):

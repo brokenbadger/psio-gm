@@ -12,13 +12,14 @@ from webapp.jobs import ProcessJobManager
 
 
 def _library_root() -> Path | None:
-    """Optional allowlist root (e.g. /games in Docker)."""
+    """Allowlist root (e.g. /games in Docker)."""
     raw = (os.environ.get("PSIO_LIBRARY_ROOT") or "").strip()
     return Path(raw).resolve() if raw else None
 
 
 def _default_library_path() -> str:
-    return (os.environ.get("PSIO_DEFAULT_LIBRARY") or "").strip()
+    """Fixed library location — no path picker in the UI."""
+    return (os.environ.get("PSIO_DEFAULT_LIBRARY") or "/games").strip()
 
 
 def _path_allowed(path: Path) -> bool:
@@ -49,7 +50,6 @@ def create_app(service: GameLibraryService | None = None) -> Flask:
         svc: GameLibraryService = app.config["SERVICE"]
         return render_template(
             "index.html",
-            library_path=svc.library_path or _default_library_path(),
             games=svc.games_as_dicts(),
             summary=svc.summarize() if svc.game_list else None,
         )
@@ -69,8 +69,7 @@ def create_app(service: GameLibraryService | None = None) -> Flask:
                 "ok": True,
                 "database_ok": db_ok,
                 "database_error": db_error,
-                "library_root": str(_library_root()) if _library_root() else None,
-                "default_library": _default_library_path() or None,
+                "library_path": _default_library_path(),
             }
         )
 
@@ -79,7 +78,7 @@ def create_app(service: GameLibraryService | None = None) -> Flask:
         svc: GameLibraryService = app.config["SERVICE"]
         return jsonify(
             {
-                "path": svc.library_path,
+                "path": svc.library_path or _default_library_path(),
                 "count": len(svc.game_list),
                 "summary": svc.summarize() if svc.game_list else None,
                 "crc_checked": svc.last_crc_check,
@@ -87,32 +86,35 @@ def create_app(service: GameLibraryService | None = None) -> Flask:
         )
 
     @app.post("/api/library")
-    def set_library():
+    def scan_library():
+        """Scan the configured library mount (path is not client-selectable)."""
         jobs: ProcessJobManager = app.config["JOBS"]
         if jobs.is_running():
             return jsonify({"ok": False, "error": "Cannot scan while a process job is running"}), 409
 
-        payload = request.get_json(silent=True) or {}
-        path = (payload.get("path") or request.form.get("path") or "").strip()
-        if not path:
-            return jsonify({"ok": False, "error": "path is required"}), 400
-
+        path = _default_library_path()
         path_obj = Path(path)
         if not path_obj.is_dir():
-            return jsonify({"ok": False, "error": f"Not a directory: {path}"}), 400
+            return jsonify(
+                {
+                    "ok": False,
+                    "error": f"Library not found at {path}. Mount your games folder (Compose uses ./games → /games).",
+                }
+            ), 400
         if not _path_allowed(path_obj):
             root = _library_root()
             return jsonify(
                 {
                     "ok": False,
-                    "error": f"Path must be under {root} (container library mount)",
+                    "error": f"Configured library path must be under {root}",
                 }
             ), 400
 
-        svc: GameLibraryService = app.config["SERVICE"]
+        payload = request.get_json(silent=True) or {}
         crc_check = bool(payload.get("crc_check", False))
+        svc: GameLibraryService = app.config["SERVICE"]
         try:
-            svc.scan_library(str(path_obj), crc_check=crc_check)
+            svc.scan_library(str(path_obj.resolve()), crc_check=crc_check)
         except DatabaseError as error:
             return jsonify({"ok": False, "error": str(error)}), 503
         except OSError as error:
@@ -143,7 +145,7 @@ def create_app(service: GameLibraryService | None = None) -> Flask:
         svc: GameLibraryService = app.config["SERVICE"]
         jobs: ProcessJobManager = app.config["JOBS"]
         if not svc.game_list:
-            return jsonify({"ok": False, "error": "No games loaded — scan a library first"}), 400
+            return jsonify({"ok": False, "error": "No games loaded — scan first"}), 400
         payload = request.get_json(silent=True) or {}
         redump_rename = bool(payload.get("redump_rename", True))
         if not jobs.start(redump_rename=redump_rename):

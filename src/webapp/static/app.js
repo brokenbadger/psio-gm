@@ -1,5 +1,4 @@
 (() => {
-  const pathInput = document.getElementById("library-path");
   const crcCheck = document.getElementById("crc-check");
   const libraryForm = document.getElementById("library-form");
   const libraryMsg = document.getElementById("library-msg");
@@ -125,7 +124,6 @@
     renderErrors([]);
     try {
       const data = await postJson("/api/library", {
-        path: pathInput.value.trim(),
         crc_check: crcCheck.checked,
       });
       renderSummary(data.summary);

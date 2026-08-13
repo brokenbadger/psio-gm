@@ -284,43 +284,28 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 
 Requires [Docker](https://docs.docker.com/get-docker/) with Compose v2.
 
-1. Clone this repo. Your PS1 library should be one subfolder per game (bin/cue). By default Compose bind-mounts **`./games`** into the container at `/games` and **creates `./games` on the host if it is missing** — no manual `mkdir` needed. Point `PSIO_GAMES_DIR` at an existing library instead if you prefer (see below).
-
-2. Start the app:
+1. Clone this repository and open a terminal in the repo root.
+2. Put your PS1 games under `./games` (one subfolder per game, each with bin/cue files).  
+   To use a different folder, set `PSIO_GAMES_DIR` in step 3.
+3. Start the app:
    ```bash
    docker compose up --build
    ```
-
-3. Open **http://127.0.0.1:5000**
-   - Library path is prefilled as **`/games`** (the folder mounted into the container).
-   - This is a path text field for the server, not a host file browser — leave `/games` unless you know what you are doing.
-   - Click **Scan**, review the list, optionally enable CRC / Redump rename, then **Process**.
-
-4. Stop with `Ctrl+C` (or `docker compose down`).
-
-### Custom games folder
-Prefer a `./relative` or absolute path:
-
-```bash
-PSIO_GAMES_DIR=./psio_games_test_folder docker compose up --build
-PSIO_GAMES_DIR=/home/you/ps1/games docker compose up --build
-```
-
-The host folder is always mounted at `/games` inside the container. Scans are restricted to that mount.
-
-### Notes for Docker
-- Binds to **127.0.0.1:5000** on the host only.
-- Nothing is uploaded; the app reads and writes files under the mounted library.
-- Image builds from `docker/Dockerfile` (tag `psio-gm-app:0.2.2`).
-- Releases: [PSIO-GM releases](https://github.com/brokenbadger/psio-gm/releases).
+   Or with a custom library path:
+   ```bash
+   PSIO_GAMES_DIR=/path/to/your/games docker compose up --build
+   ```
+4. Open http://127.0.0.1:5000
+5. Click **Scan**, then **Process**.
+6. Stop with `Ctrl+C`, or run `docker compose down`.
 
 ## Usage (web UI)
 
-- **Scan** — load games from `/games` (or the path you entered).
-- **CRC check on scan** — slower; compare tracks to Redump when data exists in the DB.
-- **Redump rename** — optional rename during Process.
-- **Process** — merge multi-bin, CU2, covers, names, LibCrypt, MULTIDISC; one job at a time.
-- CRC column: `*` = check off; `Yes`/`No` = result; `—` = no Redump track data in the DB.
+1. Optionally enable **CRC check on scan**.
+2. Click **Scan** to load games from the mounted library.
+3. Optionally leave **Redump rename** enabled.
+4. Click **Process** and wait for the job to finish.
+5. CRC column: `*` = check off; `Yes`/`No` = result; `—` = no Redump track data in the DB.
 
 ## Development (optional)
 
@@ -330,5 +315,6 @@ Source is under `src/` for contributors. End users should use Docker above.
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt   # flask + pillow
-python src/run_web.py             # http://127.0.0.1:5000 — needs a local games path
+python src/run_web.py             # http://127.0.0.1:5000
+# Optional: PSIO_DEFAULT_LIBRARY=/path/to/games PSIO_LIBRARY_ROOT=/path/to/games
 ```

@@ -15,12 +15,8 @@
   <main>
     <section class="panel" aria-labelledby="library-heading">
       <h2 id="library-heading">Game library</h2>
-      <p class="hint">Enter a path the <em>server</em> can read (one subfolder per game). Nothing is uploaded. In Docker use <code>/games</code> (the mounted library) — this is not a host file browser.</p>
+      <p class="hint">Games are read from the mounted library folder (one subfolder per game with bin/cue). Nothing is uploaded.</p>
       <form id="library-form" class="row">
-        <label class="grow">
-          <span class="sr-only">Library path</span>
-          <input type="text" id="library-path" name="path" value="{{ library_path }}" placeholder="/games or /path/to/games" required>
-        </label>
         <label class="check">
           <input type="checkbox" id="crc-check" name="crc_check">
           CRC check on scan
