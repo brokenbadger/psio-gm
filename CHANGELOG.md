@@ -8,6 +8,16 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.2] — 2026-08-13
+
+Docker-only Flask line (tag **`v0.2.2`**).
+
+### Changed
+- **Docker-only product path** — supported run method is `docker compose up --build` (Flask web UI). Removed Compose profiles and the X11 Tk service
+- **Dependencies** — `requirements.txt` is **Flask + Pillow only**; removed ttkbootstrap / Tk desktop entrypoint (`src/psio_gm.py`). Use branch `v0.1` for the Tk app
+- **Slimmer image** — no Tk apt packages; image tag `psio-gm-app:0.2.2`
+- **Docs** — README rewritten around Docker
+
 ## [0.2.1] — 2026-08-13
 
 Review follow-up for the v0.2 web/Docker line (tag **`v0.2.1`**).

@@ -1,14 +1,10 @@
-# Built by Docker Compose only (`docker compose up --build`).
-# GUI profile needs X11; web profile is the recommended container use case.
+# Built by Docker Compose (`docker compose up --build`).
+# End-user runtime is the Flask web UI only (no Tk / X11).
 
 FROM python:3.11-slim
 
 LABEL org.opencontainers.image.title="PSIO-GM" \
-      org.opencontainers.image.version="0.2.1"
-
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends python3-tk tk \
-    && rm -rf /var/lib/apt/lists/*
+      org.opencontainers.image.version="0.2.2"
 
 WORKDIR /app
 
@@ -19,4 +15,4 @@ COPY src/ /app/src/
 
 WORKDIR /app/src
 
-CMD ["python", "psio_gm.py"]
+CMD ["python", "-m", "webapp", "--host", "0.0.0.0", "--port", "5000"]

@@ -1,33 +1,22 @@
-# PSIO-GM Docker Compose
+# PSIO-GM — Docker Compose (supported run path)
 #
-# A profile is required — `docker compose up` alone starts no services.
-#
-# Web UI (recommended — no X11):
 #   mkdir -p games
-#   docker compose --profile web up --build
+#   docker compose up --build
 #   Open http://127.0.0.1:5000 — library path is prefilled as /games
-#   (host folder is bind-mounted to /games; the web UI is a path text field, not a host browser)
-#
-# Tk GUI (optional, Linux + host X11):
-#   xhost +local:docker
-#   docker compose --profile gui up --build
-#   Browse to /games in the app
-#   xhost -local:docker
 #
 # Custom games folder (prefer ./relative or absolute path):
-#   PSIO_GAMES_DIR=./psio_games_test_folder docker compose --profile web up --build
-#   PSIO_GAMES_DIR=/home/you/ps1/games docker compose --profile web up --build
+#   PSIO_GAMES_DIR=./psio_games_test_folder docker compose up --build
+#   PSIO_GAMES_DIR=/home/you/ps1/games docker compose up --build
 
 name: psio-gm
 
 services:
-  psio-gm-web:
-    profiles: ["web"]
+  psio-gm:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    image: psio-gm-app:0.2.1
-    container_name: psio-gm-web
+    image: psio-gm-app:0.2.2
+    container_name: psio-gm
     environment:
       PSIO_LIBRARY_ROOT: /games
       PSIO_DEFAULT_LIBRARY: /games
@@ -41,31 +30,3 @@ services:
           create_host_path: true
     working_dir: /app/src
     command: ["python", "-m", "webapp", "--host", "0.0.0.0", "--port", "5000"]
-
-  psio-gm:
-    profiles: ["gui"]
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    image: psio-gm-app:0.2.1
-    container_name: psio-gm
-    environment:
-      DISPLAY: ${DISPLAY:-:0}
-      XAUTHORITY: /root/.Xauthority
-    volumes:
-      - type: bind
-        source: /tmp/.X11-unix
-        target: /tmp/.X11-unix
-      - type: bind
-        source: ${XAUTHORITY:-${HOME}/.Xauthority}
-        target: /root/.Xauthority
-        read_only: true
-      - type: bind
-        source: ${PSIO_GAMES_DIR:-./games}
-        target: /games
-        bind:
-          create_host_path: true
-    working_dir: /app/src
-    ipc: host
-    stdin_open: true
-    tty: true

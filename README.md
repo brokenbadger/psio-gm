@@ -1,5 +1,5 @@
 # PSIO-GM
-**Version 0.2.1**
+**Version 0.2.2**
 
 Prepare PlayStation 1 bin/cue games for use with a PSIO device.<br>
 The all-in-one solution to preparing your PSIO collection.<br>
@@ -9,25 +9,23 @@ The all-in-one solution to preparing your PSIO collection.<br>
 ## About this fork
 **PSIO-GM** is a maintained fork of [logi-26/psio-game-manager](https://github.com/logi-26/psio-game-manager).
 
-**v0.2** is the current default line (headless library core, Tk GUI, and Flask web UI). **v0.1** remains available as the prior stable Tk-only line.
+**v0.2** runs as a **Docker** web app (Flask UI on localhost). Put games in a host folder, start Compose, open the UI. For the older Tk desktop app, use branch **`v0.1`**.
 
 Compared with upstream at the time of forking, this fork includes:
 
 - Safer multi-BIN merging (no delete-before-verify)
-- Per-game batch error handling with a summary dialog
+- Per-game batch error handling
 - Fixes for CU2 track matching, incomplete multi-disc sets, and PPF3 undo detection
-- Script-relative resource/DB paths (run from any working directory)
-- Rebrand (`psio_gm.py` / PSIO-GM), trimmed dependencies, Docker Compose
-- Requires Python 3.10+ (ttkbootstrap 2.x)
-- Updated About credits for upstream and this fork
-- **v0.2** — headless `GameLibraryService`, Flask localhost web UI, Compose `--profile web`
+- Script-relative resource/DB paths
+- Rebrand (PSIO-GM)
+- **v0.2** — headless `GameLibraryService` + Flask web UI, **Docker Compose as the supported way to run**
 
-Full detail: [CHANGELOG.md](CHANGELOG.md). Audit/fix tracking: [GitHub Issues](https://github.com/brokenbadger/psio-gm/issues).
+Full detail: [CHANGELOG.md](CHANGELOG.md). Issues: [GitHub Issues](https://github.com/brokenbadger/psio-gm/issues).
 
 **This application:**<br/>
 Organises and standardises PlayStation 1 games into a format acceptable by the PSIO device. It performs the following tasks:<br/>
 
-- Works on Linux, Mac and Windows.
+- Works on Linux, Mac and Windows **via Docker**.
 - Works in batch mode on all selected games.
 - Merges all multi-bin games into single bin files.
 - Generates CU2 files for all games that use CDDA audio.
@@ -38,9 +36,6 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 - OPTIONAL:
 - Rename all games using the game names from the PlayStation Redump project.
 - Performs CRC-32 checks of each data track using data from the PlayStation Redump project.
-
-## Windows Users
-Windows builds will be published on the [PSIO-GM releases](https://github.com/brokenbadger/psio-gm/releases) page.
 
 ## Notes
   - For best performance, use the application with your games stored on a PC HDD and then transfer to an SD card.
@@ -285,117 +280,59 @@ Windows builds will be published on the [PSIO-GM releases](https://github.com/br
   - SCES_019.09 - Wip3out (Europe)
 </details>
 
-## Dependencies
-This project requires **Python 3.10+** and:
-- `ttkbootstrap` 2.x + `pillow` 10–12 (Tk desktop UI; needs Tkinter)
-- `flask` 3.x (web UI)
+## Run with Docker
 
-### Installation Steps for running the Python scripts
+Requires [Docker](https://docs.docker.com/get-docker/) with Compose v2.
 
-1. **Install Python 3**:
-   - Download and install Python 3 from the official website: https://www.python.org/downloads/
-   - Ensure Python 3 is added to your system PATH.
-   - On Linux, also install Tk support for the desktop UI (e.g. `python3-tk` / `tk`).
-   - Python **3.10 or newer** is required (ttkbootstrap 2.x).
+1. Clone this repo and put (or mount) your PS1 library — one subfolder per game with bin/cue files:
+   ```bash
+   mkdir -p games
+   # or point PSIO_GAMES_DIR at an existing library (see below)
+   ```
 
-2. **Install pip**:
-   - Pip is usually included with Python 3. To check if pip is installed, run:
-     ```bash
-     pip --version
-     ```
-   - If pip is not installed, you can install it by following the instructions here: https://pip.pypa.io/en/stable/installation/
+2. Start the app:
+   ```bash
+   docker compose up --build
+   ```
 
-3. **Set up a virtual environment**:
-     - Create a virtual environment:
-       ```bash
-       python -m venv psio_gm_env
-       ```
-     - Activate the virtual environment:
-       - On Windows:
-         ```bash
-         psio_gm_env\Scripts\activate
-         ```
-       - On macOS and Linux:
-         ```bash
-         source psio_gm_env/bin/activate
-         ```
-      - Install dependencies in the virtual environment:
-        ```bash
-        pip install -r requirements.txt
-        ```
-      - Run the **Tk desktop UI** (resources resolve relative to the script directory, not your CWD):
-        ```bash
-        python src/psio_gm.py
-        ```
-      - Or run the **Flask web UI** (binds to `127.0.0.1:5000` by default; operates on a library path on disk — no BIN uploads):
-        ```bash
-        python src/run_web.py
-        ```
-        Then open http://127.0.0.1:5000 and scan your games folder.
+3. Open **http://127.0.0.1:5000**
+   - Library path is prefilled as **`/games`** (the folder mounted into the container).
+   - This is a path text field for the server, not a host file browser — leave `/games` unless you know what you are doing.
+   - Click **Scan**, review the list, optionally enable CRC / Redump rename, then **Process**.
 
-    **Docker Compose** (v0.2 — a **profile is required**; `docker compose up` alone starts nothing):
+4. Stop with `Ctrl+C` (or `docker compose down`).
 
-      Compose bind-mounts a host games folder to **`/games`** inside the container. The web UI does **not** browse your host disk — it takes a path the container can see (prefilled as `/games`). Override the host side with `PSIO_GAMES_DIR` (prefer `./relative` or an absolute path). Default is `./games`.
+### Custom games folder
+Prefer a `./relative` or absolute path:
 
-      - **Web UI (recommended)** — no X11; listens on http://127.0.0.1:5000:
-        ```bash
-        mkdir -p games
-        docker compose --profile web up --build
-        ```
-        Open http://127.0.0.1:5000, keep library path as `/games`, then Scan.
+```bash
+PSIO_GAMES_DIR=./psio_games_test_folder docker compose up --build
+PSIO_GAMES_DIR=/home/you/ps1/games docker compose up --build
+```
 
-      - **Tk GUI (optional, Linux + X11 only)**:
-        ```bash
-        mkdir -p games
-        xhost +local:docker
-        docker compose --profile gui up --build
-        ```
-        In the app, Browse to `/games`. When finished: `xhost -local:docker`
+The host folder is always mounted at `/games` inside the container. Scans are restricted to that mount.
 
-      - **Custom games folder** examples:
-        ```bash
-        PSIO_GAMES_DIR=./psio_games_test_folder docker compose --profile web up --build
-        PSIO_GAMES_DIR=/home/you/ps1/games docker compose --profile web up --build
-        ```
+### Notes for Docker
+- Binds to **127.0.0.1:5000** on the host only.
+- Nothing is uploaded; the app reads and writes files under the mounted library.
+- Image builds from `docker/Dockerfile` (tag `psio-gm-app:0.2.2`).
+- Releases: [PSIO-GM releases](https://github.com/brokenbadger/psio-gm/releases).
 
-      - Image builds from `docker/Dockerfile` (tag `psio-gm-app:0.2.1`). Web container sets `PSIO_DEFAULT_LIBRARY=/games` and restricts scans to that mount via `PSIO_LIBRARY_ROOT`.
+## Usage (web UI)
 
-## Usage
-1. **Using the Tk GUI**:
-   - Click on the **Browse** button and select the root directory that contains your PlayStation games.
-   - OPTIONAL: Select to rename all games using the game names from the PlayStation Redump project.
-   - Click on the **Process** button to process the games.
-   - The progress bar will display the progress of the application and current status.
+- **Scan** — load games from `/games` (or the path you entered).
+- **CRC check on scan** — slower; compare tracks to Redump when data exists in the DB.
+- **Redump rename** — optional rename during Process.
+- **Process** — merge multi-bin, CU2, covers, names, LibCrypt, MULTIDISC; one job at a time.
+- CRC column: `*` = check off; `Yes`/`No` = result; `—` = no Redump track data in the DB.
 
-2. **Using the web UI**:
-   - Start with `python src/run_web.py` (from the repo root), or Docker `--profile web`.
-   - Enter a path the **server process** can read (on the host: your games folder; in Docker: `/games`).
-   - This is a text field, not a host file browser.
-   - Click **Scan**, review the list, then **Process**.
-   - Status polls while a background job runs (one job at a time).
-   - CRC column: `*` = check off; `Yes`/`No` = result; `—` = no Redump track data in the DB.
+## Development (optional)
 
-3. **OPTIONAL: Run with debug print logs**:
-   - Desktop:
-     ```bash
-     python src/psio_gm.py -d
-     ```
-   - Web:
-     ```bash
-     python src/run_web.py -d
-     ```
-   - Windows exe (when published):
-     ```bash
-     psio_gm.exe -d
-     ```
+Source is under `src/` for contributors. End users should use Docker above.
 
-## Building an executable
-   - Install pyinstaller:
-     ```bash
-     pip install pyinstaller
-     ```
-   - From the `src` directory, first launch once so `data/psio_assist.db` is merged from the split parts, then build:
-     ```bash
-     pyinstaller --onefile --add-data "data/psio_assist.db:data" --add-data "icon.ico:." --icon=icon.ico --noconsole --distpath builds/windows psio_gm.py
-     ```
-     On Windows, use `;` instead of `:` in `--add-data` separators.
+```bash
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt   # flask + pillow
+python src/run_web.py             # http://127.0.0.1:5000 — needs a local games path
+```

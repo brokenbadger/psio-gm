@@ -1,7 +1,7 @@
 """
 Headless game-library orchestration for PSIO-GM.
 
-Used by the Tk GUI and the Flask web UI. No Tkinter imports.
+Used by the Flask web UI. No GUI toolkit imports.
 """
 
 from __future__ import annotations
@@ -35,7 +35,7 @@ class GameLibraryService:
         self.library_path: Optional[str] = None
         self.last_crc_check: bool = False
 
-        # Resolve data/icons relative to the src directory (stable for -m / Flask / Tk)
+        # Resolve data relative to the src directory (stable for -m / Flask)
         self.resource_root = Path(resource_root) if resource_root else Path(__file__).resolve().parent
 
         self.db = GameDatabase(debug_mode=self.debug_mode)
