@@ -7,7 +7,7 @@ The all-in-one solution to preparing your PSIO collection.<br>
 ![alt text](image.png)
 
 ## About this fork
-**PSIO-GM** is a maintained fork of <a href="https://github.com/logi-26/psio-game-manager" target="_blank" rel="noopener noreferrer">logi-26/psio-game-manager</a>.
+**PSIO-GM** is a maintained fork of [logi-26/psio-game-manager](https://github.com/logi-26/psio-game-manager).
 
 **v0.2** runs as a **Docker** web app (Flask UI on localhost). Put games in a host folder, start Compose, open the UI. For the older Tk desktop app, use branch **`v0.1`**.
 
@@ -20,7 +20,7 @@ Compared with upstream at the time of forking, this fork includes:
 - Rebrand (PSIO-GM)
 - **v0.2** — headless `GameLibraryService` + Flask web UI, **Docker Compose as the supported way to run**
 
-Full detail: <a href="CHANGELOG.md" target="_blank" rel="noopener noreferrer">CHANGELOG.md</a>. Issues: <a href="https://github.com/brokenbadger/psio-gm/issues" target="_blank" rel="noopener noreferrer">GitHub Issues</a>.
+Full detail: [CHANGELOG.md](CHANGELOG.md). Issues: [GitHub Issues](https://github.com/brokenbadger/psio-gm/issues).
 
 **This application:**<br/>
 Organises and standardises PlayStation 1 games into a format acceptable by the PSIO device. It performs the following tasks:<br/>
@@ -282,7 +282,7 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 
 ## Run with Docker
 
-You need <a href="https://docs.docker.com/get-started/" target="_blank" rel="noopener noreferrer">Docker Desktop</a> (Windows, macOS, or Linux) **or** <a href="https://docs.docker.com/engine/" target="_blank" rel="noopener noreferrer">Docker Engine</a> with <a href="https://docs.docker.com/compose/" target="_blank" rel="noopener noreferrer">Compose</a> v2.
+You need [Docker Desktop](https://docs.docker.com/get-started/) (Windows, macOS, or Linux) **or** [Docker Engine](https://docs.docker.com/engine/) with [Compose](https://docs.docker.com/compose/) v2.
 
 The image runs as a non-root user. On **Docker Desktop**, bind-mount ownership is handled for you — use plain `docker compose up --build -d`. On **Docker Engine** (typical Linux server/desktop install without Desktop), pass `PUID=$(id -u) PGID=$(id -g)` so processed files match your host user. The `-d` flag runs the app in the background so you can close the terminal.
 
@@ -299,7 +299,7 @@ The image runs as a non-root user. On **Docker Desktop**, bind-mount ownership i
    docker compose up --build -d
    ```
    First run builds the image; the app keeps running in the background (you can close the terminal).
-6. In your browser, open <a href="http://127.0.0.1:5000" target="_blank" rel="noopener noreferrer">http://127.0.0.1:5000</a>
+6. In your browser, open [http://127.0.0.1:5000](http://127.0.0.1:5000)
 7. Stop the app:
    ```bash
    docker compose down
@@ -337,7 +337,7 @@ Instead of using `./games` under the repo, point Compose at another folder when 
    PUID=$(id -u) PGID=$(id -g) PSIO_GAMES_DIR=/path/to/your/games docker compose up --build -d
    ```
    The app keeps running in the background (you can close the terminal).
-4. Open <a href="http://127.0.0.1:5000" target="_blank" rel="noopener noreferrer">http://127.0.0.1:5000</a>
+4. Open [http://127.0.0.1:5000](http://127.0.0.1:5000)
 5. Stop the app:
    ```bash
    docker compose down
