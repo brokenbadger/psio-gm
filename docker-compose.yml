@@ -19,7 +19,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    image: psio-gm-app:0.2.2
+    image: psio-gm-app:0.2.3
     container_name: psio-gm
     user: "${PUID:-1000}:${PGID:-1000}"
     environment:

@@ -8,6 +8,10 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.3] — 2026-08-13
+
+Docker web UI polish and ownership fix (tag **`v0.2.3`**).
+
 ### Added
 - **Web About** — About control in the header shows the same credits as v0.1 (upstream LoGi26 + fork brokenbadger, GPL-3.0)
 
@@ -22,6 +26,7 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Docs** — add step-by-step Docker Desktop instructions (including Windows path examples)
 - **Web UI** — removed library path field; Scan always uses the mounted library (`PSIO_DEFAULT_LIBRARY`, default `/games`)
 - **Docs** — Docker and web usage steps updated for the fixed library mount
+- **Image** — tag `psio-gm-app:0.2.3`
 
 ## [0.2.2] — 2026-08-13
 

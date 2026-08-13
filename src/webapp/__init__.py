@@ -10,7 +10,7 @@ from flask import Flask, jsonify, render_template, request
 from library_service import DatabaseError, GameLibraryService
 from webapp.jobs import ProcessJobManager
 
-APP_VERSION = "0.2.2"
+APP_VERSION = "0.2.3"
 
 
 def _library_root() -> Path | None:

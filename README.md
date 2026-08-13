@@ -1,5 +1,5 @@
 # PSIO-GM
-**Version 0.2.2**
+**Version 0.2.3**
 
 Prepare PlayStation 1 bin/cue games for use with a PSIO device.<br>
 The all-in-one solution to preparing your PSIO collection.<br>
