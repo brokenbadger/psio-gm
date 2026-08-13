@@ -300,11 +300,6 @@ The image runs as a non-root user. On **Docker Desktop**, bind-mount ownership i
    ```
    First run builds the image; the app keeps running in the background (you can close the terminal).
 6. In your browser, open [http://127.0.0.1:5000](http://127.0.0.1:5000)
-7. Stop the app:
-   ```bash
-   docker compose down
-   ```
-   Or select the compose stack in Docker Desktop and stop it.
 
 **Custom games folder (Docker Desktop)**
 
@@ -338,10 +333,6 @@ Instead of using `./games` under the repo, point Compose at another folder when 
    ```
    The app keeps running in the background (you can close the terminal).
 4. Open [http://127.0.0.1:5000](http://127.0.0.1:5000)
-5. Stop the app:
-   ```bash
-   docker compose down
-   ```
 
 ### Start and stop later (after the first build)
 
