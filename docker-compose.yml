@@ -4,8 +4,11 @@
 #   Open http://127.0.0.1:5000 — Scan / Process (library is ./games → /games)
 #   (./games is bind-mounted and created on the host if missing)
 #
+# Run as the host user so processed game folders are not root-owned.
+# Pass the current user's IDs (any account on any machine):
+#   PUID=$(id -u) PGID=$(id -g) docker compose up --build
+#
 # Custom games folder (prefer ./relative or absolute path):
-#   PSIO_GAMES_DIR=./psio_games_test_folder docker compose up --build
 #   PSIO_GAMES_DIR=/home/you/ps1/games docker compose up --build
 
 name: psio-gm
@@ -17,9 +20,11 @@ services:
       dockerfile: docker/Dockerfile
     image: psio-gm-app:0.2.2
     container_name: psio-gm
+    user: "${PUID:-1000}:${PGID:-1000}"
     environment:
       PSIO_LIBRARY_ROOT: /games
       PSIO_DEFAULT_LIBRARY: /games
+      PYTHONDONTWRITEBYTECODE: "1"
     ports:
       - "127.0.0.1:5000:5000"
     volumes:

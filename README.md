@@ -284,6 +284,8 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 
 You need [Docker Desktop](https://docs.docker.com/get-started/) (Windows, macOS, or Linux) **or** [Docker Engine](https://docs.docker.com/engine/) with [Compose](https://docs.docker.com/compose/) v2.
 
+Processed game files are written as **whoever runs Compose** (not root, and not a fixed account). On Linux/macOS the start commands pass your current `id -u` / `id -g` into the container as `PUID`/`PGID`, so ownership matches that user on any machine.
+
 ### Docker Desktop
 
 1. Install Docker Desktop and start it (wait until it shows **Running**).
@@ -293,9 +295,17 @@ You need [Docker Desktop](https://docs.docker.com/get-started/) (Windows, macOS,
 4. In Docker Desktop, open a terminal in the repo folder:  
    **File** → open the project folder, or use **Terminal** / your system terminal (`cd` into the repo root).
 5. Start the app:
-   ```bash
-   docker compose up --build
-   ```
+
+   - macOS / Linux:
+     ```bash
+     PUID=$(id -u) PGID=$(id -g) docker compose up --build
+     ```
+   - Windows (PowerShell or Command Prompt):
+     ```bash
+     docker compose up --build
+     ```
+     (Docker Desktop maps bind-mount ownership for you; defaults `PUID=1000` / `PGID=1000` are fine.)
+
    First run builds the image; leave this terminal open while the app is running.
 6. In your browser, open http://127.0.0.1:5000
 7. Stop the app: press `Ctrl+C` in the terminal, or select the compose stack in Docker Desktop and stop it.
@@ -306,7 +316,7 @@ Instead of using `./games` under the repo, point Compose at another folder when 
 
 - macOS / Linux terminal:
   ```bash
-  PSIO_GAMES_DIR=/path/to/your/games docker compose up --build
+  PUID=$(id -u) PGID=$(id -g) PSIO_GAMES_DIR=/path/to/your/games docker compose up --build
   ```
 - Windows PowerShell:
   ```powershell
@@ -324,14 +334,20 @@ Instead of using `./games` under the repo, point Compose at another folder when 
    To use a different folder, set `PSIO_GAMES_DIR` in step 3.
 3. Start the app:
    ```bash
-   docker compose up --build
+   PUID=$(id -u) PGID=$(id -g) docker compose up --build
    ```
    Or with a custom library path:
    ```bash
-   PSIO_GAMES_DIR=/path/to/your/games docker compose up --build
+   PUID=$(id -u) PGID=$(id -g) PSIO_GAMES_DIR=/path/to/your/games docker compose up --build
    ```
 4. Open http://127.0.0.1:5000
 5. Stop with `Ctrl+C`, or run `docker compose down`.
+
+If you already processed games while the container ran as root, fix ownership once (as that library’s owner):
+
+```bash
+sudo chown -R "$(id -u):$(id -g)" games
+```
 
 ## Usage (web UI)
 
