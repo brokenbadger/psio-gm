@@ -343,6 +343,53 @@ Instead of using `./games` under the repo, point Compose at another folder when 
    docker compose down
    ```
 
+### Start and stop later (after the first build)
+
+After the first `docker compose up --build -d`, the container already exists. Day to day, start and stop that same container (this avoids creating duplicates):
+
+**Docker Desktop**
+
+- Start (create once, if the container is missing — e.g. after `docker compose down`):
+  ```bash
+  docker compose up -d
+  ```
+  Or create/start the **psio-gm** stack from the Docker Desktop UI.
+- Start (existing container):
+  ```bash
+  docker start psio-gm
+  ```
+  Or start the container/stack in Docker Desktop.
+- Stop:
+  ```bash
+  docker stop psio-gm
+  ```
+  Or stop it in Docker Desktop.
+- Open [http://127.0.0.1:5000](http://127.0.0.1:5000) while it is running.
+
+If you use a custom games folder, set `PSIO_GAMES_DIR` when you run `docker compose up -d` (same as on first start).
+
+**Docker Engine**
+
+- Start (create once, if the container is missing — e.g. after `docker compose down`):
+  ```bash
+  PUID=$(id -u) PGID=$(id -g) docker compose up -d
+  ```
+  With a custom games folder:
+  ```bash
+  PUID=$(id -u) PGID=$(id -g) PSIO_GAMES_DIR=/path/to/your/games docker compose up -d
+  ```
+- Start (existing container):
+  ```bash
+  docker start psio-gm
+  ```
+- Stop:
+  ```bash
+  docker stop psio-gm
+  ```
+- Open [http://127.0.0.1:5000](http://127.0.0.1:5000) while it is running.
+
+Use `docker compose up --build -d` again only when you pull app updates or change the Dockerfile / Compose file. Use `docker compose down` only when you want to remove the container (then create it again with `up -d` before `start`/`stop` will work).
+
 ## Usage (web UI)
 
 1. Optionally enable **CRC check on scan**.
