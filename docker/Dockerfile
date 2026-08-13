@@ -1,4 +1,4 @@
-# Built by Docker Compose (`docker compose up --build`).
+# Built by Docker Compose (`docker compose up --build -d`).
 # The app never runs as root: default USER is psio (uid 1000).
 # Compose overrides with PUID:PGID so bind-mounted ./games files match the host user.
 

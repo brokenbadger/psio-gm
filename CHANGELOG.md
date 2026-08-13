@@ -12,6 +12,7 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Web About** — About control in the header shows the same credits as v0.1 (upstream LoGi26 + fork brokenbadger, GPL-3.0)
 
 ### Changed
+- **Docs** — Docker Desktop vs Engine ownership guidance clarified; run Compose detached (`-d`) so the terminal can be closed
 - **Docs** — add step-by-step Docker Desktop instructions (including Windows path examples)
 - **Web UI** — removed library path field; Scan always uses the mounted library (`PSIO_DEFAULT_LIBRARY`, default `/games`)
 - **Docs** — Docker and web usage steps updated for the fixed library mount

@@ -1,15 +1,16 @@
 # PSIO-GM — Docker Compose (supported run path)
 #
-#   docker compose up --build
+#   docker compose up --build -d
 #   Open http://127.0.0.1:5000 — Scan / Process (library is ./games → /games)
 #   (./games is bind-mounted and created on the host if missing)
+#   Stop with: docker compose down
 #
 # Run as the host user so processed game folders are not root-owned.
 # Pass the current user's IDs (any account on any machine):
-#   PUID=$(id -u) PGID=$(id -g) docker compose up --build
+#   PUID=$(id -u) PGID=$(id -g) docker compose up --build -d
 #
 # Custom games folder (prefer ./relative or absolute path):
-#   PSIO_GAMES_DIR=/home/you/ps1/games docker compose up --build
+#   PSIO_GAMES_DIR=/home/you/ps1/games docker compose up --build -d
 
 name: psio-gm
 
