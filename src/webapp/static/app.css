@@ -26,6 +26,9 @@
   --accent-dim: #3a7fc0;
   --font: "Arial", "Segoe UI", sans-serif;
   --mono: "Consolas", "Courier New", monospace;
+  /* Comfortable on large monitors; fills narrower viewports */
+  --layout-max: 1400px;
+  --layout-pad: clamp(1rem, 2vw, 1.75rem);
 }
 
 * {
@@ -41,7 +44,10 @@ body {
 }
 
 .top {
-  padding: 1.5rem 1.75rem 0.5rem;
+  padding: 1.5rem var(--layout-pad) 0.5rem;
+  width: 100%;
+  max-width: var(--layout-max);
+  margin-inline: auto;
 }
 
 .top-row {
@@ -122,10 +128,12 @@ button.linkish:hover {
 }
 
 main {
-  padding: 1rem 1.75rem 2.5rem;
+  padding: 1rem var(--layout-pad) 2.5rem;
   display: grid;
   gap: 1.25rem;
-  max-width: 1200px;
+  width: 100%;
+  max-width: var(--layout-max);
+  margin-inline: auto;
 }
 
 .panel {
@@ -341,7 +349,10 @@ tbody tr:hover {
 }
 
 footer {
-  padding: 0 1.75rem 1.5rem;
+  padding: 0 var(--layout-pad) 1.5rem;
+  width: 100%;
+  max-width: var(--layout-max);
+  margin-inline: auto;
   color: var(--muted);
   font-size: 0.8rem;
 }

@@ -8,6 +8,9 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+- **Web UI** — content column centred at max **1400px** (full width on smaller screens)
+
 ## [0.2.3] — 2026-08-13
 
 Docker web UI polish and ownership fix (tag **`v0.2.3`**).
