@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PSIO-GM</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+  <header class="top">
+    <h1>PSIO-GM</h1>
+    <p class="tagline">Prepare PlayStation 1 bin/cue games for PSIO — web UI (localhost)</p>
+  </header>
+
+  <main>
+    <section class="panel" aria-labelledby="library-heading">
+      <h2 id="library-heading">Game library</h2>
+      <p class="hint">Point at a folder that contains one subfolder per game (bin/cue). Large files stay on disk — nothing is uploaded.</p>
+      <form id="library-form" class="row">
+        <label class="grow">
+          <span class="sr-only">Library path</span>
+          <input type="text" id="library-path" name="path" value="{{ library_path }}" placeholder="/path/to/games" required>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="crc-check" name="crc_check">
+          CRC check on scan
+        </label>
+        <button type="submit" id="scan-btn">Scan</button>
+      </form>
+      <p id="library-msg" class="msg" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="panel" aria-labelledby="summary-heading">
+      <h2 id="summary-heading">Summary</h2>
+      <dl id="summary" class="summary">
+        {% if summary %}
+        <div><dt>Total</dt><dd>{{ summary.total_games }}</dd></div>
+        <div><dt>Unidentified</dt><dd>{{ summary.unidentified }}</dd></div>
+        <div><dt>No cover</dt><dd>{{ summary.without_cover }}</dd></div>
+        <div><dt>Multi-bin</dt><dd>{{ summary.multi_bin }}</dd></div>
+        <div><dt>Invalid names</dt><dd>{{ summary.invalid_names }}</dd></div>
+        <div><dt>Multi-disc games</dt><dd>{{ summary.multi_disc_games }}</dd></div>
+        {% else %}
+        <p class="muted">Scan a library to see counts.</p>
+        {% endif %}
+      </dl>
+    </section>
+
+    <section class="panel" aria-labelledby="games-heading">
+      <div class="row between">
+        <h2 id="games-heading">Games</h2>
+        <form id="process-form" class="row">
+          <label class="check">
+            <input type="checkbox" id="redump-rename" name="redump_rename" checked>
+            Redump rename
+          </label>
+          <button type="submit" id="process-btn" {% if not games %}disabled{% endif %}>Process</button>
+        </form>
+      </div>
+      <div id="status" class="status" hidden>
+        <div class="bar"><div id="status-bar"></div></div>
+        <p id="status-text"></p>
+      </div>
+      <div class="table-wrap">
+        <table id="games-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Disc</th>
+              <th>Bins</th>
+              <th>Cover</th>
+              <th>CU2</th>
+              <th>LST</th>
+              <th>LibCrypt</th>
+              <th>CRC</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for g in games %}
+            <tr>
+              <td>{{ g.name }}</td>
+              <td>{{ g.id or '—' }}</td>
+              <td>{{ g.disc_number }}</td>
+              <td>{{ g.bin_count }}</td>
+              <td>{{ 'Yes' if g.cover_art else 'No' }}</td>
+              <td>{% if not g.cu2_required %}*{% elif g.cu2_present %}Yes{% else %}No{% endif %}</td>
+              <td>{% if not g.multi_disc %}*{% elif g.lst_present %}Yes{% else %}No{% endif %}</td>
+              <td>{% if not g.libcrypt_required %}*{% elif g.libcrypt_applied %}Yes{% else %}No{% endif %}</td>
+              <td>{% if g.crc_valid is none %}—{% elif g.crc_valid %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            {% else %}
+            <tr class="empty"><td colspan="9">No games loaded.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>PSIO-GM v0.2 · binds to localhost by default · GPL-3.0</p>
+  </footer>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

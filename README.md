@@ -1,5 +1,5 @@
 # PSIO-GM
-**Version 0.1**
+**Version 0.2 (development)**
 
 Prepare PlayStation 1 bin/cue games for use with a PSIO device.<br>
 The all-in-one solution to preparing your PSIO collection.<br>
@@ -9,7 +9,9 @@ The all-in-one solution to preparing your PSIO collection.<br>
 ## About this fork
 **PSIO-GM** is a maintained fork of [logi-26/psio-game-manager](https://github.com/logi-26/psio-game-manager).
 
-Compared with upstream at the time of forking, v0.1 includes:
+**v0.1** is the stable Tk desktop line. **v0.2** (this branch) adds a headless library core shared by the Tk GUI and a Flask web UI.
+
+Compared with upstream at the time of forking, this fork includes:
 
 - Safer multi-BIN merging (no delete-before-verify)
 - Per-game batch error handling with a summary dialog
@@ -18,6 +20,7 @@ Compared with upstream at the time of forking, v0.1 includes:
 - Rebrand (`psio_gm.py` / PSIO-GM), trimmed dependencies, Docker Compose
 - Requires Python 3.10+ (ttkbootstrap 2.x)
 - Updated About credits for upstream and this fork
+- **v0.2** — headless `GameLibraryService`, Flask localhost web UI, Compose `--profile web`
 
 Full detail: [CHANGELOG.md](CHANGELOG.md). Audit/fix tracking: [GitHub Issues](https://github.com/brokenbadger/psio-gm/issues).
 
@@ -279,15 +282,16 @@ Windows builds will be published on the [PSIO-GM releases](https://github.com/br
 </details>
 
 ## Dependencies
-This project requires **Python 3.10+** (with Tkinter) and:
-- `ttkbootstrap` 2.x (requires `pillow` 10–12)
+This project requires **Python 3.10+** and:
+- `ttkbootstrap` 2.x + `pillow` 10–12 (Tk desktop UI; needs Tkinter)
+- `flask` 3.x (web UI)
 
 ### Installation Steps for running the Python scripts
 
 1. **Install Python 3**:
    - Download and install Python 3 from the official website: https://www.python.org/downloads/
    - Ensure Python 3 is added to your system PATH.
-   - On Linux, also install Tk support (e.g. `python3-tk` / `tk`).
+   - On Linux, also install Tk support for the desktop UI (e.g. `python3-tk` / `tk`).
    - Python **3.10 or newer** is required (ttkbootstrap 2.x).
 
 2. **Install pip**:
@@ -315,42 +319,59 @@ This project requires **Python 3.10+** (with Tkinter) and:
         ```bash
         pip install -r requirements.txt
         ```
-      - Run the script (resources resolve relative to the script directory, not your CWD):
+      - Run the **Tk desktop UI** (resources resolve relative to the script directory, not your CWD):
         ```bash
         python src/psio_gm.py
         ```
+      - Or run the **Flask web UI** (binds to `127.0.0.1:5000` by default; operates on a library path on disk — no BIN uploads):
+        ```bash
+        python src/run_web.py
+        ```
+        Then open http://127.0.0.1:5000 and scan your games folder.
 
-    **Docker Compose (optional, needs X11)**:
-      - Prefer a local venv unless you already know how to forward a display into a container.
-      - Put games under `./games` (or set `PSIO_GAMES_DIR` to a `./relative` or absolute path), then on Linux:
+    **Docker Compose**:
+      - **Web UI (recommended in Docker)** — no X11:
+        ```bash
+        mkdir -p games
+        PSIO_GAMES_DIR=./games docker compose --profile web up --build
+        ```
+        Open http://127.0.0.1:5000 and scan `/games`.
+      - **Tk GUI (optional)** — needs host X11 on Linux:
         ```bash
         mkdir -p games
         xhost +local:docker
-        docker compose up --build
+        PSIO_GAMES_DIR=./games docker compose --profile gui up --build
         ```
+        When finished: `xhost -local:docker`
       - Custom folder example (the `./` is required, or Compose treats the name as a volume):
         ```bash
-        mkdir -p psio_games_test_folder
-        PSIO_GAMES_DIR=./psio_games_test_folder docker compose up --build
+        PSIO_GAMES_DIR=/home/you/ps1/games docker compose --profile web up --build
         ```
-      - In the app, browse to `/games`.
-      - When finished: `xhost -local:docker`
       - Compose builds from `docker/Dockerfile` (no root-level Dockerfile).
 
 ## Usage
-1. **Using the GUI**:
+1. **Using the Tk GUI**:
    - Click on the **Browse** button and select the root directory that contains your PlayStation games.
    - OPTIONAL: Select to rename all games using the game names from the PlayStation Redump project.
    - Click on the **Process** button to process the games.
    - The progress bar will display the progress of the application and current status.
 
-2. **OPTIONAL: Run the application with debug print logs**:
-   - Run the script using the -d commandline argument:
+2. **Using the web UI**:
+   - Start with `python src/run_web.py` (or Docker `--profile web`).
+   - Enter the absolute path to your games root (or `/games` in Docker).
+   - Click **Scan**, review the list, then **Process**.
+   - Status polls while a background job runs (one job at a time).
+
+3. **OPTIONAL: Run with debug print logs**:
+   - Desktop:
      ```bash
      python src/psio_gm.py -d
      ```
-
-   - Run the exe using the -d commandline argument:
+   - Web:
+     ```bash
+     python src/run_web.py -d
+     ```
+   - Windows exe (when published):
      ```bash
      psio_gm.exe -d
      ```

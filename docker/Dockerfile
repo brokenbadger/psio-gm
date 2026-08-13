@@ -1,10 +1,10 @@
 # Built by Docker Compose only (`docker compose up --build`).
-# Prefer a local Python 3.10+ venv with Tk for everyday use.
+# GUI profile needs X11; web profile is the recommended container use case.
 
 FROM python:3.11-slim
 
 LABEL org.opencontainers.image.title="PSIO-GM" \
-      org.opencontainers.image.version="0.1"
+      org.opencontainers.image.version="0.2"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends python3-tk tk \

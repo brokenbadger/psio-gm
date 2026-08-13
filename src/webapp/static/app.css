@@ -1,0 +1,262 @@
+:root {
+  --bg: #1a1d21;
+  --panel: #24292f;
+  --border: #3d444d;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #3fb950;
+  --accent-dim: #238636;
+  --warn: #d29922;
+  --danger: #f85149;
+  --font: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--text);
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -20%, #2d333b 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, #1f3d2a 0%, transparent 45%),
+    var(--bg);
+}
+
+.top {
+  padding: 1.5rem 1.75rem 0.5rem;
+}
+
+.top h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  letter-spacing: 0.02em;
+}
+
+.tagline {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+main {
+  padding: 1rem 1.75rem 2.5rem;
+  display: grid;
+  gap: 1.25rem;
+  max-width: 1200px;
+}
+
+.panel {
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem 1.15rem 1.15rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.65rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.hint {
+  margin: 0 0 0.85rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.row.between {
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.grow {
+  flex: 1 1 16rem;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #0d1117;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
+
+.check {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--muted);
+  user-select: none;
+}
+
+button {
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--accent-dim);
+  border-radius: 4px;
+  background: var(--accent-dim);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.msg {
+  min-height: 1.25rem;
+  margin: 0.65rem 0 0;
+  font-size: 0.9rem;
+}
+
+.msg.error {
+  color: var(--danger);
+}
+
+.msg.ok {
+  color: var(--accent);
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.65rem;
+  margin: 0;
+}
+
+.summary > div {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #0d1117;
+}
+
+.summary dt {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.summary dd {
+  margin: 0.15rem 0 0;
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--muted);
+  margin: 0;
+}
+
+.status {
+  margin-bottom: 0.85rem;
+}
+
+.bar {
+  height: 8px;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+#status-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+  transition: width 0.2s ease;
+}
+
+#status-text {
+  margin: 0.4rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.table-wrap {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+th,
+td {
+  padding: 0.45rem 0.6rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+th {
+  background: #0d1117;
+  color: var(--muted);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+tbody tr:hover {
+  background: color-mix(in srgb, var(--accent-dim) 18%, transparent);
+}
+
+.empty td {
+  color: var(--muted);
+  text-align: center;
+  padding: 1.25rem;
+}
+
+footer {
+  padding: 0 1.75rem 1.5rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+@media (max-width: 640px) {
+  main,
+  .top,
+  footer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

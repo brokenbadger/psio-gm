@@ -245,14 +245,21 @@ class GameDatabase:
 
     # ************************************************************************************
     def get_libcrypt_status(self, game_id: str):
-        """Get libcrypt status from local database"""
+        """Get libcrypt status from local database.
+
+        The games.libcrypt flag is incomplete for some titles that still have
+        patches in libcrypt_patches (e.g. SCES_02105 CTR Europe). Treat a game
+        as LibCrypt-required if either the flag is set or a patch is available.
+        """
         if not game_id:
-            return
+            return False
 
         formatted_game_id = game_id.replace('-', '_')
         query = f'SELECT libcrypt FROM games WHERE game_id = "{formatted_game_id}"'
         response = self.select(query)
-        return response[0][0] if response else 0
+        if response and response[0][0]:
+            return True
+        return self.libcrypt_patch_available(game_id)
     # ************************************************************************************
 
 

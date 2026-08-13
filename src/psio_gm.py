@@ -59,42 +59,31 @@ from ttkbootstrap.constants import DISABLED
 from pathlib import Path
 
 # Local classes
-from game_files import Game, Cuesheet, Binfile
-from utils import Utils
-from db import GameDatabase
-from binmerge import BinMerger
-from cu2 import Cu2Generator
-from ppf_patcher import PPFProcessor
-from crc_32 import CrcFileVerifier
+from game_files import Game, Binfile
+from library_service import DatabaseError, GameLibraryService
 
 
 class PSIOGM:
-    CURRENT_REVISION = 0.1
-    MAX_GAME_NAME_LENGTH = 56
+    CURRENT_REVISION = 0.2
+    MAX_GAME_NAME_LENGTH = GameLibraryService.MAX_GAME_NAME_LENGTH
 
     def __init__(self, args=None):
         """Initialise the PSIO-GM application"""
 
-        self.game_list = []
         self.script_root_dir = Path(abspath(dirname(sys.argv[0])))
         self.config_file_path = join(self.script_root_dir, 'config')
 
         # Set debug mode based on the parsed command-line arguments
         self.debug_mode = args.debug if args else False
 
-        # Initialise the local classes
-        self.db = GameDatabase(debug_mode=self.debug_mode)
-        self.crc_verifier = CrcFileVerifier(debug_mode=self.debug_mode)
-        self.bin_merger = BinMerger(debug_mode=self.debug_mode)
-        self.ppf_patcher = PPFProcessor(debug_mode=self.debug_mode)
-        self.cu2_generator = Cu2Generator(debug_mode=self.debug_mode)
-
-        # Set the database paths
-        self.database_name = "psio_assist.db"
-        self.database_path = self._resource_path("data")
-        self.db.set_database_path(self.database_path, self.database_name)
-
-        self.utils = Utils(database=self.db, debug_mode=self.debug_mode)
+        # Headless library service (shared with the web UI)
+        self.service = GameLibraryService(
+            debug_mode=self.debug_mode,
+            resource_root=self.script_root_dir,
+        )
+        self.utils = self.service.utils
+        self.db = self.service.db
+        self.cu2_generator = self.service.cu2_generator
 
         # Set the icon path
         self.icon_path = self._resource_path("icon.ico")
@@ -115,6 +104,14 @@ class PSIOGM:
         self.cover_art_frame = None
 
         self._debug_print(f'\nPSIO-GM v{self.CURRENT_REVISION}')
+
+    @property
+    def game_list(self):
+        return self.service.game_list
+
+    @game_list.setter
+    def game_list(self, value):
+        self.service.game_list = value
 
 
     # ************************************************************************************
@@ -147,75 +144,21 @@ class PSIOGM:
 
     # ************************************************************************************
     def process_games(self):
-        """Process the games in the game list"""
+        """Process the games in the game list via the headless service"""
 
-        self._debug_print('\nPROCESSING GAMES...')
-        failed_games = []
-
-        # Loop through all of the Game objects in the game list
-        for game_index, game in enumerate(self.game_list):
-
-            # Display the game name in the progress label
-            game_name = game.get_cue_sheet().get_game_name()
-            self._set_progress_text(f"Processing - {game_name}")
-            self._update_progress_bar(0)
-
-            self._debug_print('\n***********************************************************')
-            self._debug_print(f'GAME_ID: {game.get_id()}')
-            self._debug_print(f'GAME_NAME: {game_name}')
-
-            try:
-                # Merge multi-bin files
-                self._merge_multi_bin_files(game)
-                self._update_progress_bar(30)
-
-                # Generate CU2 file for games with CCDA audio
-                self._generate_cu2_file(game)
-                self._update_progress_bar(40)
-
-                # Rename the game using the game name from the Redump project
-                if self.redump_rename.get():
-                    self.utils.rename_game_using_redump(game)
-                self._update_progress_bar(50)
-
-                # Validate the game name
-                self.utils.validate_game_name(game)
-                self._update_progress_bar(65)
-
-                # Add the game cover art
-                self.utils.add_game_cover_art(game)
-                self._update_progress_bar(75)
-
-                # Apply LibCrypt PPF patch
-                self.utils.apply_libcrypt_patch(game)
-                self._update_progress_bar(95)
-
-                # Update the game list in the GUI after each game has been processed
+        def on_progress(stage, message, percent, game_index=None):
+            self._set_progress_text(message)
+            self._update_progress_bar(percent)
+            if game_index is not None and stage == "process" and percent >= 95:
                 self._update_game_row(game_index)
 
-            except Exception as error:
-                failed_games.append((game_name, str(error)))
-                self._debug_print(f'ERROR processing {game_name}: {error}')
-                print(f'ERROR processing {game_name}: {error}')
-                self._set_progress_text(f"Failed - {game_name}")
+        failed_games = self.service.process_games(
+            redump_rename=bool(self.redump_rename.get()),
+            on_progress=on_progress,
+        )
 
-            self._debug_print('***********************************************************\n')
-
-        # Generate multi-disc games after all of the other processes have been completed
-        self._update_progress_bar(100)
-        self._set_progress_text("Generating multi-disc files...")
-        try:
-            self.utils.generate_multidisc_files(self.game_list)
-        except Exception as error:
-            failed_games.append(('MULTIDISC.LST generation', str(error)))
-            self._debug_print(f'ERROR generating multi-disc files: {error}')
-            print(f'ERROR generating multi-disc files: {error}')
-
-        # Clear the progress status
         self._update_progress_bar(100)
         self._set_progress_text("")
-
-        # Update the game list in the GUI
         self._display_game_list()
 
         if failed_games:
@@ -387,20 +330,29 @@ class PSIOGM:
 
     # ************************************************************************************
     def _create_game_list(self, selected_path: str):
-        """Create and populate the global game list."""
-        self.game_list = []
-        sub_folders = self.utils.get_sub_folders(selected_path)
+        """Create and populate the global game list via the headless service."""
 
         self._debug_print('\nGAME DETAILS:\n')
-        self._set_progress_text("Generating game list...")
 
-        if not sub_folders:
+        def on_progress(stage, message, percent, game_index=None):
+            self._set_progress_text(message)
+            self._update_progress_bar(percent)
+            if self.game_list:
+                self._display_game_list()
+
+        try:
+            self.service.scan_library(
+                selected_path,
+                crc_check=bool(self.crc_check.get()),
+                on_progress=on_progress,
+            )
+        except DatabaseError as error:
+            md = MessageDialog(str(error), title='Database Error', width=70, padding=(20, 20))
+            md.show()
             return
 
-        for sub_folder in sub_folders:
-            self._process_sub_folder(selected_path, sub_folder)
-
-        self._sort_game_list()
+        for game in self.game_list:
+            self._print_game_details(game)
     # ************************************************************************************
 
 
@@ -897,7 +849,11 @@ class PSIOGM:
         self.button_start.place(x=30, y=frame_y +100, width=window_width -50, height=30)
 
         # Ensure the game database is available before the user starts browsing
-        self.db.ensure_database_exists()
+        try:
+            self.service.ensure_database()
+        except DatabaseError as error:
+            md = MessageDialog(str(error), title='Database Error', width=70, padding=(20, 20))
+            md.show()
     # ************************************************************************************
 
 
@@ -914,7 +870,9 @@ class PSIOGM:
             "\n"
             "PSIO-GM Forked by brokenbadger\n"
             "Copyright (C) 2026 brokenbadger\n"
-            "Licensed under the GNU General Public License v3.0"
+            "Licensed under the GNU General Public License v3.0\n"
+            "\n"
+            "Tk desktop UI (web UI available separately)."
         )
         md = MessageDialog(
             message,

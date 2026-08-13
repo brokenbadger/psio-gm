@@ -8,14 +8,19 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Changed
-- **Dependencies** — `ttkbootstrap==2.2.0` and `pillow==12.3.0` (compatible set; ttkbootstrap requires Python ≥3.10 and pillow≥10,<13)
-- **GUI / ttkbootstrap 2.x** — install legacy themes for saved configs, curated themes in the menu, default theme `bootstrap-dark`, MessageDialog widths use character units
-- **Docs** — Python requirement raised to 3.10+
-- **Docker** — no root-level `Dockerfile`; Compose remains the supported entry point (`docker compose up --build`)
-
 ### Fixed
-- **Docker Compose build** — use `docker/Dockerfile` referenced from Compose instead of `dockerfile_inline` (requires Buildx and failed on hosts without it)
+- **LibCrypt detection** — titles with a PPF in `libcrypt_patches` but a missing/`0` `games.libcrypt` flag (e.g. SCES_02105 CTR Europe) are now treated as LibCrypt-required so the UI shows Yes/No and patches can apply
+
+### Added
+- **Headless core** — `GameLibraryService` (`src/library_service.py`) for scan/process; shared by Tk and web
+- **Flask web UI** — localhost MVP (`python src/run_web.py` / `python -m webapp`); configure a library path on disk (no BIN uploads); background process job with status polling
+- **Docker Compose `--profile web`** — web container on `127.0.0.1:5000` with games bind-mount (no X11); Tk GUI moved to `--profile gui`
+
+### Changed
+- **App revision** — `CURRENT_REVISION = 0.2` on branch `v0.2`
+- **Tk GUI** — scan/process/database ensure delegate to `GameLibraryService`
+- **Dependencies** — add `flask==3.1.2`; keep `ttkbootstrap==2.2.0` and `pillow==12.3.0`
+- **Docs** — README covers web UI and Compose profiles
 
 ## [0.1.0] — 2026-08-12
 

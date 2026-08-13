@@ -1,0 +1,6 @@
+"""python -m webapp"""
+
+from webapp import main
+
+if __name__ == "__main__":
+    main()
