@@ -8,6 +8,9 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+- **Docs** — Docker Compose README section updated for required `--profile web` / `--profile gui` (bare `docker compose up` starts no services)
+
 ## [0.2.0] — 2026-08-13
 
 First **v0.2** line release (tag **`v0.2.0`** on branch `v0.2` — tag kept distinct from the branch name).

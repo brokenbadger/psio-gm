@@ -333,25 +333,32 @@ This project requires **Python 3.10+** and:
         ```
         Then open http://127.0.0.1:5000 and scan your games folder.
 
-    **Docker Compose**:
-      - **Web UI (recommended in Docker)** — no X11:
+    **Docker Compose** (v0.2 — a **profile is required**; `docker compose up` alone starts nothing):
+
+      Both services bind your games folder to **`/games`** inside the container. Override the host path with `PSIO_GAMES_DIR` (use a `./relative` or absolute path — a bare name like `games` is treated as a named volume). Default is `./games`.
+
+      - **Web UI (recommended)** — no X11; listens on http://127.0.0.1:5000:
         ```bash
         mkdir -p games
-        PSIO_GAMES_DIR=./games docker compose --profile web up --build
+        docker compose --profile web up --build
         ```
-        Open http://127.0.0.1:5000 and scan `/games`.
-      - **Tk GUI (optional)** — needs host X11 on Linux:
+        Open http://127.0.0.1:5000 and set the library path to `/games` (then Scan).
+
+      - **Tk GUI (optional, Linux + X11 only)**:
         ```bash
         mkdir -p games
         xhost +local:docker
-        PSIO_GAMES_DIR=./games docker compose --profile gui up --build
+        docker compose --profile gui up --build
         ```
-        When finished: `xhost -local:docker`
-      - Custom folder example (the `./` is required, or Compose treats the name as a volume):
+        In the app, Browse to `/games`. When finished: `xhost -local:docker`
+
+      - **Custom games folder** examples:
         ```bash
+        PSIO_GAMES_DIR=./psio_games_test_folder docker compose --profile web up --build
         PSIO_GAMES_DIR=/home/you/ps1/games docker compose --profile web up --build
         ```
-      - Compose builds from `docker/Dockerfile` (no root-level Dockerfile).
+
+      - Image builds from `docker/Dockerfile` (no root-level Dockerfile).
 
 ## Usage
 1. **Using the Tk GUI**:

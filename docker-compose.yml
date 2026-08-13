@@ -1,16 +1,20 @@
 # PSIO-GM Docker Compose
 #
-# Web UI (recommended in Docker — no X11):
-#   mkdir -p games
-#   PSIO_GAMES_DIR=./games docker compose --profile web up --build
-#   Open http://127.0.0.1:5000 and scan /games (or a subdirectory).
+# A profile is required — `docker compose up` alone starts no services.
 #
-# Tk GUI (optional, needs host X11):
+# Web UI (recommended — no X11):
+#   mkdir -p games
+#   docker compose --profile web up --build
+#   Open http://127.0.0.1:5000 and set the library path to /games
+#
+# Tk GUI (optional, Linux + host X11):
 #   xhost +local:docker
-#   PSIO_GAMES_DIR=./games docker compose --profile gui up --build
+#   docker compose --profile gui up --build
+#   Browse to /games in the app
 #   xhost -local:docker
 #
-# Custom games folder (use ./ or an absolute path — bare names are treated as volumes):
+# Custom games folder (use ./relative or absolute — bare names become named volumes):
+#   PSIO_GAMES_DIR=./psio_games_test_folder docker compose --profile web up --build
 #   PSIO_GAMES_DIR=/home/you/ps1/games docker compose --profile web up --build
 
 name: psio-gm
