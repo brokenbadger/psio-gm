@@ -282,7 +282,43 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 
 ## Run with Docker
 
-Requires [Docker](https://docs.docker.com/get-docker/) with Compose v2.
+You need [Docker Desktop](https://docs.docker.com/desktop/) (Windows, macOS, or Linux) **or** Docker Engine with Compose v2.
+
+### Docker Desktop
+
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) and start it (wait until it shows **Running**).
+2. Clone this repository to your PC (GitHub Desktop, `git clone`, or download the ZIP and extract it).
+3. Put your PS1 games in a `games` folder inside the repo (one subfolder per game, each with bin/cue files).  
+   Example: `psio-gm/games/Crash Bandicoot/...`
+4. In Docker Desktop, open a terminal in the repo folder:  
+   **File** → open the project folder, or use **Terminal** / your system terminal (`cd` into the repo root).
+5. Start the app:
+   ```bash
+   docker compose up --build
+   ```
+   First run builds the image; leave this terminal open while the app is running.
+6. In your browser, open http://127.0.0.1:5000
+7. Click **Scan**, then **Process**.
+8. Stop the app: press `Ctrl+C` in the terminal, or select the compose stack in Docker Desktop and stop it.
+
+**Custom games folder (Docker Desktop)**
+
+Instead of using `./games` under the repo, point Compose at another folder when you start:
+
+- macOS / Linux terminal:
+  ```bash
+  PSIO_GAMES_DIR=/path/to/your/games docker compose up --build
+  ```
+- Windows PowerShell:
+  ```powershell
+  $env:PSIO_GAMES_DIR="C:\path\to\your\games"; docker compose up --build
+  ```
+- Windows Command Prompt:
+  ```bat
+  set PSIO_GAMES_DIR=C:\path\to\your\games&& docker compose up --build
+  ```
+
+### Command line (Docker Engine)
 
 1. Clone this repository and open a terminal in the repo root.
 2. Put your PS1 games under `./games` (one subfolder per game, each with bin/cue files).  

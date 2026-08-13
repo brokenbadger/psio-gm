@@ -9,6 +9,7 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
+- **Docs** — add step-by-step Docker Desktop instructions (including Windows path examples)
 - **Web UI** — removed library path field; Scan always uses the mounted library (`PSIO_DEFAULT_LIBRARY`, default `/games`)
 - **Docs** — Docker and web usage steps updated for the fixed library mount
 
