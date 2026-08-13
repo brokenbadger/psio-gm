@@ -11,6 +11,9 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 - **Web About** — About control in the header shows the same credits as v0.1 (upstream LoGi26 + fork brokenbadger, GPL-3.0)
 
+### Fixed
+- **Docker ownership** — app runs as non-root with host `PUID`/`PGID` so processed game files are not root-owned
+
 ### Changed
 - **Web UI** — colour scheme matched to ttkbootstrap **superhero** (same palette as the README screenshot / v0.1 theme menu); status messages use primary blue
 - **Docs** — Docker Desktop vs Engine ownership guidance clarified; run Compose detached (`-d`) so the terminal can be closed
