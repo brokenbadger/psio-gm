@@ -8,8 +8,22 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-08-13
+
+Review follow-up for the v0.2 web/Docker line (tag **`v0.2.1`**).
+
+### Fixed
+- **Flat library paths** — no-subdir libraries use `.` as the folder name so Redump rename cannot target filesystem root (e.g. under `/games` in Docker)
+- **LibCrypt apply** — only mark applied / invalidate CRC after a successful PPF1–3 apply; guard against failed file opens
+- **Cover summary** — single-disc games (`disc_number == 0`) count toward missing covers
+- **Web CRC column** — matches Tk/README (`*` when CRC check off; `—` only when no Redump track data)
+- **Web process UI** — refresh summary after jobs; list per-game errors; reject scan while a job runs; atomic single-job start
+- **Tk Browse cancel** — no longer enables Process with an empty path
+- **Docs / Compose** — clarify path text field vs host browser; remove incorrect “named volume” warning; prefill `/games` and allowlist via `PSIO_LIBRARY_ROOT` / `PSIO_DEFAULT_LIBRARY`; image tag `0.2.1`
+
 ### Changed
-- **Docs** — Docker Compose README section updated for required `--profile web` / `--profile gui` (bare `docker compose up` starts no services)
+- **Tk GUI** — remove unused pre-service scan/merge helpers left after the GameLibraryService refactor
+- **Docs** — prefer `python src/run_web.py` from repo root (`python -m webapp` needs cwd/`PYTHONPATH` under `src/`)
 
 ## [0.2.0] — 2026-08-13
 

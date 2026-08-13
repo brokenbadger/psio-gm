@@ -11,6 +11,7 @@
   const statusBox = document.getElementById("status");
   const statusBar = document.getElementById("status-bar");
   const statusText = document.getElementById("status-text");
+  const errorList = document.getElementById("error-list");
 
   let pollTimer = null;
 
@@ -35,9 +36,10 @@
   }
 
   function crcLabel(g) {
+    // Match Tk/README: * = check off; Yes/No = result; — = no Redump track data
+    if (!g.crc_checked) return "*";
     if (g.crc_valid === true) return "Yes";
     if (g.crc_valid === false) return "No";
-    // null/undefined: CRC not run, or no Redump track data in the database
     return "—";
   }
 
@@ -55,10 +57,7 @@
       ["Multi-disc games", summary.multi_disc_games],
     ];
     summaryEl.innerHTML = rows
-      .map(
-        ([k, v]) =>
-          `<div><dt>${k}</dt><dd>${v}</dd></div>`
-      )
+      .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`)
       .join("");
   }
 
@@ -83,6 +82,18 @@
           <td>${crcLabel(g)}</td>
         </tr>`
       )
+      .join("");
+  }
+
+  function renderErrors(errors) {
+    if (!errors || !errors.length) {
+      errorList.hidden = true;
+      errorList.innerHTML = "";
+      return;
+    }
+    errorList.hidden = false;
+    errorList.innerHTML = errors
+      .map((e) => `<li><strong>${escapeHtml(e.name)}</strong>: ${escapeHtml(e.error)}</li>`)
       .join("");
   }
 
@@ -111,6 +122,7 @@
     event.preventDefault();
     setMsg("Scanning…");
     processBtn.disabled = true;
+    renderErrors([]);
     try {
       const data = await postJson("/api/library", {
         path: pathInput.value.trim(),
@@ -151,6 +163,8 @@
         const gamesRes = await fetch("/api/games");
         const gamesData = await gamesRes.json();
         renderGames(gamesData.games || []);
+        renderSummary(gamesData.summary);
+        renderErrors(status.errors || []);
         if (status.state === "completed") {
           setMsg("Processing finished.", status.errors?.length ? "error" : "ok");
         } else if (status.state === "failed") {
@@ -168,6 +182,7 @@
   processForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     setMsg("");
+    renderErrors([]);
     processBtn.disabled = true;
     try {
       await postJson("/api/process", {

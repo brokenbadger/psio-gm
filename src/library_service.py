@@ -11,12 +11,9 @@ from os.path import exists, join
 from pathlib import Path
 from typing import Callable, Optional
 
-from binmerge import BinMerger
-from crc_32 import CrcFileVerifier
 from cu2 import Cu2Generator
 from db import GameDatabase
 from game_files import Binfile, Cuesheet, Game
-from ppf_patcher import PPFProcessor
 from utils import Utils
 
 ProgressCallback = Callable[[str, str, int, Optional[int]], None]
@@ -36,6 +33,7 @@ class GameLibraryService:
         self.debug_mode = debug_mode
         self.game_list: list[Game] = []
         self.library_path: Optional[str] = None
+        self.last_crc_check: bool = False
 
         # Resolve data/icons relative to the src directory (stable for -m / Flask / Tk)
         self.resource_root = Path(resource_root) if resource_root else Path(__file__).resolve().parent
@@ -43,10 +41,6 @@ class GameLibraryService:
         self.db = GameDatabase(debug_mode=self.debug_mode)
         self.utils = Utils(database=self.db, debug_mode=self.debug_mode)
         self.cu2_generator = Cu2Generator(debug_mode=self.debug_mode)
-        # Kept for parity / future use; Utils owns its own instances for processing
-        self.crc_verifier = CrcFileVerifier(debug_mode=self.debug_mode)
-        self.bin_merger = BinMerger(debug_mode=self.debug_mode)
-        self.ppf_patcher = PPFProcessor(debug_mode=self.debug_mode)
 
         self.db.set_database_path(str(self.resource_root / "data"), self.DATABASE_NAME)
 
@@ -91,6 +85,7 @@ class GameLibraryService:
         """Scan subfolders under library_path and populate game_list."""
         self.ensure_database()
         self.library_path = library_path
+        self.last_crc_check = bool(crc_check)
         self.game_list = []
 
         self._emit(on_progress, "scan", "Generating game list...", 0)
@@ -288,6 +283,7 @@ class GameLibraryService:
                     "lst_present": game.get_multi_disc_file_present(),
                     "libcrypt_required": game.get_libcrypt_required(),
                     "libcrypt_applied": game.get_libcrypt_applied(),
+                    "crc_checked": self.last_crc_check,
                     "crc_valid": game.get_crc_valid(),
                     "directory": join(game.get_directory_path(), game.get_directory_name()),
                 }
@@ -307,7 +303,8 @@ class GameLibraryService:
             if game.get_id() is None:
                 unidentified += 1
             disc_number = game.get_disc_number()
-            if not game.get_cover_art_present() and disc_number and int(disc_number) < 2:
+            # Count disc 0 (single-disc) and disc 1; skip later discs in a set
+            if not game.get_cover_art_present() and int(disc_number or 0) < 2:
                 without_cover += 1
             if self.utils.is_multi_disc(game):
                 multi_discs += 1

@@ -4,7 +4,7 @@
 FROM python:3.11-slim
 
 LABEL org.opencontainers.image.title="PSIO-GM" \
-      org.opencontainers.image.version="0.2"
+      org.opencontainers.image.version="0.2.1"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends python3-tk tk \

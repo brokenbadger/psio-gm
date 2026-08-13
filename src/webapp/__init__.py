@@ -2,12 +2,34 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
 
 from library_service import DatabaseError, GameLibraryService
 from webapp.jobs import ProcessJobManager
+
+
+def _library_root() -> Path | None:
+    """Optional allowlist root (e.g. /games in Docker)."""
+    raw = (os.environ.get("PSIO_LIBRARY_ROOT") or "").strip()
+    return Path(raw).resolve() if raw else None
+
+
+def _default_library_path() -> str:
+    return (os.environ.get("PSIO_DEFAULT_LIBRARY") or "").strip()
+
+
+def _path_allowed(path: Path) -> bool:
+    root = _library_root()
+    if root is None:
+        return True
+    try:
+        path.resolve().relative_to(root)
+        return True
+    except ValueError:
+        return path.resolve() == root
 
 
 def create_app(service: GameLibraryService | None = None) -> Flask:
@@ -27,7 +49,7 @@ def create_app(service: GameLibraryService | None = None) -> Flask:
         svc: GameLibraryService = app.config["SERVICE"]
         return render_template(
             "index.html",
-            library_path=svc.library_path or "",
+            library_path=svc.library_path or _default_library_path(),
             games=svc.games_as_dicts(),
             summary=svc.summarize() if svc.game_list else None,
         )
@@ -42,7 +64,15 @@ def create_app(service: GameLibraryService | None = None) -> Flask:
         except DatabaseError as error:
             db_ok = False
             db_error = str(error)
-        return jsonify({"ok": True, "database_ok": db_ok, "database_error": db_error})
+        return jsonify(
+            {
+                "ok": True,
+                "database_ok": db_ok,
+                "database_error": db_error,
+                "library_root": str(_library_root()) if _library_root() else None,
+                "default_library": _default_library_path() or None,
+            }
+        )
 
     @app.get("/api/library")
     def get_library():
@@ -52,22 +82,37 @@ def create_app(service: GameLibraryService | None = None) -> Flask:
                 "path": svc.library_path,
                 "count": len(svc.game_list),
                 "summary": svc.summarize() if svc.game_list else None,
+                "crc_checked": svc.last_crc_check,
             }
         )
 
     @app.post("/api/library")
     def set_library():
+        jobs: ProcessJobManager = app.config["JOBS"]
+        if jobs.is_running():
+            return jsonify({"ok": False, "error": "Cannot scan while a process job is running"}), 409
+
         payload = request.get_json(silent=True) or {}
         path = (payload.get("path") or request.form.get("path") or "").strip()
         if not path:
             return jsonify({"ok": False, "error": "path is required"}), 400
-        if not Path(path).is_dir():
+
+        path_obj = Path(path)
+        if not path_obj.is_dir():
             return jsonify({"ok": False, "error": f"Not a directory: {path}"}), 400
+        if not _path_allowed(path_obj):
+            root = _library_root()
+            return jsonify(
+                {
+                    "ok": False,
+                    "error": f"Path must be under {root} (container library mount)",
+                }
+            ), 400
 
         svc: GameLibraryService = app.config["SERVICE"]
         crc_check = bool(payload.get("crc_check", False))
         try:
-            svc.scan_library(path, crc_check=crc_check)
+            svc.scan_library(str(path_obj), crc_check=crc_check)
         except DatabaseError as error:
             return jsonify({"ok": False, "error": str(error)}), 503
         except OSError as error:
@@ -82,23 +127,16 @@ def create_app(service: GameLibraryService | None = None) -> Flask:
             }
         )
 
-    @app.post("/api/library/scan")
-    def scan_library():
-        svc: GameLibraryService = app.config["SERVICE"]
-        if not svc.library_path:
-            return jsonify({"ok": False, "error": "Set a library path first"}), 400
-        payload = request.get_json(silent=True) or {}
-        crc_check = bool(payload.get("crc_check", False))
-        try:
-            svc.scan_library(svc.library_path, crc_check=crc_check)
-        except DatabaseError as error:
-            return jsonify({"ok": False, "error": str(error)}), 503
-        return jsonify({"ok": True, "games": svc.games_as_dicts(), "summary": svc.summarize()})
-
     @app.get("/api/games")
     def list_games():
         svc: GameLibraryService = app.config["SERVICE"]
-        return jsonify({"games": svc.games_as_dicts()})
+        return jsonify(
+            {
+                "games": svc.games_as_dicts(),
+                "summary": svc.summarize() if svc.game_list else None,
+                "crc_checked": svc.last_crc_check,
+            }
+        )
 
     @app.post("/api/process")
     def start_process():

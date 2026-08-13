@@ -49,8 +49,6 @@ import sys
 from os.path import exists, join, dirname, abspath
 from json import load, dumps
 from argparse import ArgumentParser
-from ast import literal_eval
-from typing import Optional
 from tkinter import Menu, filedialog, StringVar, BooleanVar, TclError, PhotoImage
 from ttkbootstrap import Window, Floodgauge, Treeview, Style, Scrollbar, Labelframe, Label, Button, NO, CENTER, VERTICAL
 from ttkbootstrap import install_legacy_themes
@@ -59,7 +57,6 @@ from ttkbootstrap.constants import DISABLED
 from pathlib import Path
 
 # Local classes
-from game_files import Game, Binfile
 from library_service import DatabaseError, GameLibraryService
 
 
@@ -183,152 +180,6 @@ class PSIOGM:
 
 
     # ************************************************************************************
-    def _merge_multi_bin_files(self, game: Game):
-        """Merge multi-bin files"""
-        game_name = game.get_cue_sheet().get_game_name()
-        game_full_path = join(game.get_directory_path(), game.get_directory_name())
-
-        if len(game.get_cue_sheet().get_bin_files()) > 1:
-            self._debug_print('MERGING BIN FILES...')
-            self._set_progress_text(f"Merging bin files - {game_name}")
-            if not self.utils.merge_bin_files(game):
-                raise RuntimeError(f"Failed to merge multi-bin files for {game_name}")
-
-            # Merged output is named after the cuesheet game name (first BIN stem)
-            bin_path = join(game_full_path, f"{game_name}.bin")
-            if exists(bin_path):
-                game.get_cue_sheet().set_bin_files([])
-                game.get_cue_sheet().add_bin_file(Binfile(f"{game_name}.bin", bin_path))
-            else:
-                raise RuntimeError(f"Merged BIN not found after merge: {bin_path}")
-    # ************************************************************************************
-
-
-    # ************************************************************************************
-    def _generate_cu2_file(self, game: Game):
-        """Generate CU2 file for games with CCDA audio"""
-
-        game_name = game.get_cue_sheet().get_game_name()
-        game_full_path = join(game.get_directory_path(), game.get_directory_name())
-        cue_full_path = join(game_full_path, game.get_cue_sheet().get_file_name())
-
-        if game.get_cu2_required() and not game.get_cu2_present():
-            self._debug_print('GENERATING CU2...')
-            self._set_progress_text(f"Generating cu2 file - {game_name}")
-
-            # Generate the CU2 file
-            cu2_generated = self.cu2_generator.generate_cu2(cue_full_path, f'{game_name}.bin')
-
-            if cu2_generated:
-                game.set_cu2_present(True)
-    # ************************************************************************************
-
-
-    # ************************************************************************************
-    def _sort_game_list(self):
-        """Sort the game list alphabetically by game name."""
-        self.game_list.sort(key=lambda game: game.get_cue_sheet().get_game_name(), reverse=False)
-    # ************************************************************************************
-
-
-    # ************************************************************************************
-    def _create_game_from_cue(self, game_directory_path: str, cue_sheet: str, sub_folder: str, selected_path: str) -> Optional[Game]:
-        """Create a Game object from a CUE sheet."""
-        cue_sheet_path = join(game_directory_path, cue_sheet)
-
-        #self._set_progress_text(f"Parsing Game: {str(Path(game_directory_path))}")
-        self._set_progress_text(f"Parsing Game: {str(Path(game_directory_path).stem)}")
-
-        # Check for cover art
-        cover_art_path = join(game_directory_path, cue_sheet[:-3])
-        cover_art_present = exists(f'{cover_art_path}bmp') or exists(f'{cover_art_path}BMP')
-        self._update_progress_bar(20)
-
-        # Check for multi-disc and CU2 files
-        multi_disc_file_present = exists(join(game_directory_path, 'MULTIDISC.LST'))
-        cu2_present = exists(join(game_directory_path, f'{cue_sheet[:-3]}cu2'))
-        cu2_required = self.utils.detect_cdda(cue_sheet_path)
-        self._update_progress_bar(30)
-
-        # Parse the BIN files and Tracks from the CUE file
-        bin_files = self.utils.parse_cue_file(cue_sheet_path)
-        self._update_progress_bar(40)
-
-        # Missing BIN references already logged by parse_cue_file; skip this game
-        if not bin_files:
-            print(f"ERROR: Skipping game with missing BIN files: {cue_sheet_path}")
-            self._set_progress_text("")
-            return None
-
-        # Get the game details from the BIN files
-        game_id = self.utils.parse_game_id(bin_files[0].get_file_path())
-        self._update_progress_bar(50)
-
-        disc_number = self.db.get_database_disc_number(game_id) if game_id else 0
-        game_name = Path(bin_files[0].get_file_name()).stem
-        disc_collection = self.db.get_database_disc_collection(game_id) if game_id else []
-        self._update_progress_bar(60)
-
-        # Convert the disc collection into a list
-        if disc_collection:
-            disc_collection = literal_eval(disc_collection)
-
-        # Get libcrypt status
-        libcrypt_required = self.db.get_libcrypt_status(game_id) if game_id else False
-        self._update_progress_bar(70)
-
-        # Create Cuesheet object
-        the_cue_sheet = Cuesheet(cue_sheet, cue_sheet_path, game_name)
-
-        # Add the BIN files to the Cuesheet object
-        for bin_file in bin_files:
-            the_cue_sheet.add_bin_file(bin_file)
-
-        self._update_progress_bar(80)
-
-        # Create the Game object
-        the_game =  Game(
-            sub_folder, selected_path, game_id, disc_number, disc_collection,
-            the_cue_sheet, cover_art_present, cu2_present, cu2_required,
-            multi_disc_file_present, libcrypt_required
-        )
-
-        # Check if a LibCrypt patch has already been applied to the BIN file
-        self.utils.libcrypt_already_applied(the_game)
-
-        # Perform CRC-32 check on each BIN file from the Game
-        if self.crc_check.get():
-            crc_valid = self.utils.crc_check_bin(the_game)
-            the_game.set_crc_valid(crc_valid)
-            
-        self._update_progress_bar(90)
-
-        # Return the Game object
-        self._update_progress_bar(100)
-        return the_game
-    # ************************************************************************************
-
-
-    # ************************************************************************************
-    def _process_sub_folder(self, selected_path: str, sub_folder: str):
-        """Process a single sub-folder to extract game information and add to game list."""
-        game_directory_path = join(selected_path, sub_folder)
-        cue_sheets = self.utils.find_cue_sheets(game_directory_path)
-
-        for cue_sheet in cue_sheets:
-            # Create the Game object
-            game = self._create_game_from_cue(game_directory_path, cue_sheet, sub_folder, selected_path)
-            if game:
-                # Add the Game to the game list
-                self.game_list.append(game)
-                self._print_game_details(game)
-
-                # Update the displayed game list after each game is processed
-                self._display_game_list()
-    # ************************************************************************************
-
-
-    # ************************************************************************************
     def _create_game_list(self, selected_path: str):
         """Create and populate the global game list via the headless service."""
 
@@ -382,7 +233,7 @@ class PSIOGM:
 
             # Increment the games without covers variable
             disc_number = game.get_disc_number()
-            if not game.get_cover_art_present() and disc_number and int(disc_number) < 2:
+            if not game.get_cover_art_present() and int(disc_number or 0) < 2:
                 games_without_cover +=1
 
             # Increment the multi discs variable
@@ -560,34 +411,6 @@ class PSIOGM:
     # ************************************************************************************
 
 
-    # ************************************************************************************
-    def _print_bin_file_details(self, bin_files: list[Binfile]):
-        """Print BIN file details for debugging"""
-        self._debug_print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-        self._debug_print("BIN FILES:")
-        for binfile in bin_files:
-            self._debug_print("++++++++++++++++++++++++++++++")
-            self._debug_print(f"File: {binfile.get_file_name()}")
-            self._debug_print(f"Path: {binfile.get_file_path()}")
-            self._debug_print(f"Size: {binfile.get_size()}")
-
-            self._debug_print("\nTRACKS:")
-            for track in binfile.get_tracks():
-                self._debug_print(f"Track {track.get_track_number()}")
-                self._debug_print(f"Type={track.get_track_type()}")
-                self._debug_print(f"Sectors={track.get_sectors()}")
-
-                self._debug_print("\nINDEXES:")
-                for index in track.get_indexes():
-                    self._debug_print(f"Index {index['id']}")
-                    self._debug_print(f"Stamp={index['stamp']}")
-                    self._debug_print(f"Offset={index['file_offset']}")
-
-            self._debug_print("++++++++++++++++++++++++++++++")
-        self._debug_print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-    # ************************************************************************************
-
-
     # ******************************************************
     # GUI functions below
     # ******************************************************
@@ -629,6 +452,8 @@ class PSIOGM:
             initialdir=str(Path.home()),
             title='Select Game Directory'
         )
+        if not selected_path:
+            return
         self.src_path.set(selected_path)
         self.label_src.configure(text= f"  {self.src_path.get()}")
         self._parse_game_list()

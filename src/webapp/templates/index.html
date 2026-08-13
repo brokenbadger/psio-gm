@@ -15,11 +15,11 @@
   <main>
     <section class="panel" aria-labelledby="library-heading">
       <h2 id="library-heading">Game library</h2>
-      <p class="hint">Point at a folder that contains one subfolder per game (bin/cue). Large files stay on disk — nothing is uploaded.</p>
+      <p class="hint">Enter a path the <em>server</em> can read (one subfolder per game). Nothing is uploaded. In Docker use <code>/games</code> (the mounted library) — this is not a host file browser.</p>
       <form id="library-form" class="row">
         <label class="grow">
           <span class="sr-only">Library path</span>
-          <input type="text" id="library-path" name="path" value="{{ library_path }}" placeholder="/path/to/games" required>
+          <input type="text" id="library-path" name="path" value="{{ library_path }}" placeholder="/games or /path/to/games" required>
         </label>
         <label class="check">
           <input type="checkbox" id="crc-check" name="crc_check">
@@ -87,7 +87,7 @@
               <td>{% if not g.cu2_required %}*{% elif g.cu2_present %}Yes{% else %}No{% endif %}</td>
               <td>{% if not g.multi_disc %}*{% elif g.lst_present %}Yes{% else %}No{% endif %}</td>
               <td>{% if not g.libcrypt_required %}*{% elif g.libcrypt_applied %}Yes{% else %}No{% endif %}</td>
-              <td>{% if g.crc_valid is sameas true %}Yes{% elif g.crc_valid is sameas false %}No{% else %}—{% endif %}</td>
+              <td>{% if not g.crc_checked %}*{% elif g.crc_valid is sameas true %}Yes{% elif g.crc_valid is sameas false %}No{% else %}—{% endif %}</td>
             </tr>
             {% else %}
             <tr class="empty"><td colspan="9">No games loaded.</td></tr>
@@ -95,11 +95,12 @@
           </tbody>
         </table>
       </div>
+      <ul id="error-list" class="errors" hidden></ul>
     </section>
   </main>
 
   <footer>
-    <p>PSIO-GM v0.2 · binds to localhost by default · GPL-3.0</p>
+    <p>PSIO-GM v0.2.1 · binds to localhost by default · GPL-3.0</p>
   </footer>
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>

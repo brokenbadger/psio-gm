@@ -1,5 +1,5 @@
 # PSIO-GM
-**Version 0.2.0**
+**Version 0.2.1**
 
 Prepare PlayStation 1 bin/cue games for use with a PSIO device.<br>
 The all-in-one solution to preparing your PSIO collection.<br>
@@ -335,14 +335,14 @@ This project requires **Python 3.10+** and:
 
     **Docker Compose** (v0.2 — a **profile is required**; `docker compose up` alone starts nothing):
 
-      Both services bind your games folder to **`/games`** inside the container. Override the host path with `PSIO_GAMES_DIR` (use a `./relative` or absolute path — a bare name like `games` is treated as a named volume). Default is `./games`.
+      Compose bind-mounts a host games folder to **`/games`** inside the container. The web UI does **not** browse your host disk — it takes a path the container can see (prefilled as `/games`). Override the host side with `PSIO_GAMES_DIR` (prefer `./relative` or an absolute path). Default is `./games`.
 
       - **Web UI (recommended)** — no X11; listens on http://127.0.0.1:5000:
         ```bash
         mkdir -p games
         docker compose --profile web up --build
         ```
-        Open http://127.0.0.1:5000 and set the library path to `/games` (then Scan).
+        Open http://127.0.0.1:5000, keep library path as `/games`, then Scan.
 
       - **Tk GUI (optional, Linux + X11 only)**:
         ```bash
@@ -358,7 +358,7 @@ This project requires **Python 3.10+** and:
         PSIO_GAMES_DIR=/home/you/ps1/games docker compose --profile web up --build
         ```
 
-      - Image builds from `docker/Dockerfile` (no root-level Dockerfile).
+      - Image builds from `docker/Dockerfile` (tag `psio-gm-app:0.2.1`). Web container sets `PSIO_DEFAULT_LIBRARY=/games` and restricts scans to that mount via `PSIO_LIBRARY_ROOT`.
 
 ## Usage
 1. **Using the Tk GUI**:
@@ -368,10 +368,12 @@ This project requires **Python 3.10+** and:
    - The progress bar will display the progress of the application and current status.
 
 2. **Using the web UI**:
-   - Start with `python src/run_web.py` (or Docker `--profile web`).
-   - Enter the absolute path to your games root (or `/games` in Docker).
+   - Start with `python src/run_web.py` (from the repo root), or Docker `--profile web`.
+   - Enter a path the **server process** can read (on the host: your games folder; in Docker: `/games`).
+   - This is a text field, not a host file browser.
    - Click **Scan**, review the list, then **Process**.
    - Status polls while a background job runs (one job at a time).
+   - CRC column: `*` = check off; `Yes`/`No` = result; `—` = no Redump track data in the DB.
 
 3. **OPTIONAL: Run with debug print logs**:
    - Desktop:

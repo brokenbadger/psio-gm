@@ -5,7 +5,8 @@
 # Web UI (recommended — no X11):
 #   mkdir -p games
 #   docker compose --profile web up --build
-#   Open http://127.0.0.1:5000 and set the library path to /games
+#   Open http://127.0.0.1:5000 — library path is prefilled as /games
+#   (host folder is bind-mounted to /games; the web UI is a path text field, not a host browser)
 #
 # Tk GUI (optional, Linux + host X11):
 #   xhost +local:docker
@@ -13,7 +14,7 @@
 #   Browse to /games in the app
 #   xhost -local:docker
 #
-# Custom games folder (use ./relative or absolute — bare names become named volumes):
+# Custom games folder (prefer ./relative or absolute path):
 #   PSIO_GAMES_DIR=./psio_games_test_folder docker compose --profile web up --build
 #   PSIO_GAMES_DIR=/home/you/ps1/games docker compose --profile web up --build
 
@@ -25,8 +26,11 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    image: psio-gm-app:0.2
+    image: psio-gm-app:0.2.1
     container_name: psio-gm-web
+    environment:
+      PSIO_LIBRARY_ROOT: /games
+      PSIO_DEFAULT_LIBRARY: /games
     ports:
       - "127.0.0.1:5000:5000"
     volumes:
@@ -43,7 +47,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    image: psio-gm-app:0.2
+    image: psio-gm-app:0.2.1
     container_name: psio-gm
     environment:
       DISPLAY: ${DISPLAY:-:0}

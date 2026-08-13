@@ -144,8 +144,12 @@ class Utils:
 
     # ************************************************************************************
     def get_sub_folders(self, selected_path: str) -> list:
-        """Get a list of sub-folders in the selected source directory"""
+        """Get a list of sub-folders in the selected source directory.
 
+        If there are no sub-directories, returns ['.'] so the selected path itself
+        is scanned (join(selected_path, '.') == selected_path). Never return an
+        absolute path as the folder name — that breaks renames (e.g. under /).
+        """
         if not selected_path or selected_path == "":
             return
 
@@ -156,9 +160,8 @@ class Utils:
             and f.name != 'System Volume Information'
         ]
 
-        # If there are no sub-directories use the selected directory to search for files
         if not sub_folders:
-            sub_folders = [selected_path]
+            sub_folders = ['.']
 
         return sub_folders
     # ************************************************************************************
@@ -456,23 +459,28 @@ class Utils:
             # If the PPF patch file has been copied, patch the BIN file
             if exists(ppf_path):
                 bin_file, ppf_file = self.ppf_patcher.open_files(bin_path, ppf_path)
+                if not bin_file or not ppf_file:
+                    if exists(ppf_path):
+                        remove(ppf_path)
+                    raise RuntimeError(f"Unable to open BIN/PPF for LibCrypt patch: {game.get_id()}")
 
-                with bin_file, ppf_file:
-                    version = self.ppf_patcher.get_ppf_version(ppf_file)
+                try:
+                    with bin_file, ppf_file:
+                        version = self.ppf_patcher.get_ppf_version(ppf_file)
+                        if version == 1:
+                            self.ppf_patcher.apply_ppf1_patch(ppf_file, bin_file)
+                        elif version == 2:
+                            self.ppf_patcher.apply_ppf2_patch(ppf_file, bin_file)
+                        elif version == 3:
+                            self.ppf_patcher.apply_ppf3_patch(ppf_file, bin_file)
+                        else:
+                            raise RuntimeError(f"Invalid PPF version for {game.get_id()}")
 
-                    if version == 1:
-                        self.ppf_patcher.apply_ppf1_patch(ppf_file, bin_file)
-                    elif version == 2:
-                        self.ppf_patcher.apply_ppf2_patch(ppf_file, bin_file)
-                    elif version == 3:
-                        self.ppf_patcher.apply_ppf3_patch(ppf_file, bin_file)
-
-                    # Update the Game object to show that the patch has been applied
-                    game.set_libcrypt_applied(True)
-                    game.set_crc_valid(False)
-
-                # Delete the PPF patch file after it has been applied to the BIN file
-                remove(ppf_path)
+                        game.set_libcrypt_applied(True)
+                        game.set_crc_valid(False)
+                finally:
+                    if exists(ppf_path):
+                        remove(ppf_path)
     # ************************************************************************************
 
 

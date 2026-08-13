@@ -34,46 +34,48 @@ class ProcessJobManager:
             return dict(self.status)
 
     def is_running(self) -> bool:
-        return self._thread is not None and self._thread.is_alive()
+        with self._lock:
+            return self._thread is not None and self._thread.is_alive()
 
     def start(self, *, redump_rename: bool = True) -> bool:
         """Start processing. Returns False if a job is already running."""
-        if self.is_running():
-            return False
+        with self._lock:
+            if self._thread is not None and self._thread.is_alive():
+                return False
 
-        def on_progress(stage, message, percent, game_index=None):
-            self._set_status(
-                state="running",
-                stage=stage,
-                message=message,
-                percent=percent,
-                game_index=game_index,
-                done=False,
-            )
-
-        def worker():
-            self._set_status(state="running", message="Starting...", percent=0, errors=[], done=False)
-            try:
-                errors = self.service.process_games(
-                    redump_rename=redump_rename,
-                    on_progress=on_progress,
-                )
+            def on_progress(stage, message, percent, game_index=None):
                 self._set_status(
-                    state="completed",
-                    message="Processing finished",
-                    percent=100,
-                    errors=[{"name": n, "error": e} for n, e in errors],
-                    done=True,
-                )
-            except Exception as error:  # noqa: BLE001
-                self._set_status(
-                    state="failed",
-                    message=str(error),
-                    percent=0,
-                    errors=[{"name": "job", "error": str(error)}],
-                    done=True,
+                    state="running",
+                    stage=stage,
+                    message=message,
+                    percent=percent,
+                    game_index=game_index,
+                    done=False,
                 )
 
-        self._thread = threading.Thread(target=worker, daemon=True)
-        self._thread.start()
-        return True
+            def worker():
+                self._set_status(state="running", message="Starting...", percent=0, errors=[], done=False)
+                try:
+                    errors = self.service.process_games(
+                        redump_rename=redump_rename,
+                        on_progress=on_progress,
+                    )
+                    self._set_status(
+                        state="completed",
+                        message="Processing finished",
+                        percent=100,
+                        errors=[{"name": n, "error": e} for n, e in errors],
+                        done=True,
+                    )
+                except Exception as error:  # noqa: BLE001
+                    self._set_status(
+                        state="failed",
+                        message=str(error),
+                        percent=0,
+                        errors=[{"name": "job", "error": str(error)}],
+                        done=True,
+                    )
+
+            self._thread = threading.Thread(target=worker, daemon=True)
+            self._thread.start()
+            return True
