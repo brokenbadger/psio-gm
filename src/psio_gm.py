@@ -53,6 +53,7 @@ from ast import literal_eval
 from typing import Optional
 from tkinter import Menu, filedialog, StringVar, BooleanVar, TclError, PhotoImage
 from ttkbootstrap import Window, Floodgauge, Treeview, Style, Scrollbar, Labelframe, Label, Button, NO, CENTER, VERTICAL
+from ttkbootstrap import install_legacy_themes
 from ttkbootstrap.dialogs import MessageDialog
 from ttkbootstrap.constants import DISABLED
 from pathlib import Path
@@ -229,7 +230,7 @@ class PSIOGM:
             md = MessageDialog(
                 message,
                 title='Processing Errors',
-                width=700,
+                width=80,
                 padding=(20, 20)
             )
             md.show()
@@ -465,7 +466,7 @@ class PSIOGM:
         md = MessageDialog(
             message,
             title='Game Details',
-            width=650,
+            width=70,
             padding=(20, 20)
         )
 
@@ -685,7 +686,7 @@ class PSIOGM:
             with open(self.config_file_path, encoding="utf-8") as config_file:
                 return load(config_file)['theme']
         else:
-            return "superhero"
+            return "bootstrap-dark"
 
     def _store_selected_theme(self, theme_name):
         """Store selected theme"""
@@ -705,11 +706,14 @@ class PSIOGM:
         window_width = 1300
         window_height = 770
 
+        # Keep pre-2.0 theme names (e.g. saved "superhero") available alongside curated themes
+        install_legacy_themes()
+
         self.window = Window(
             title=f'PSIO-GM v{self.CURRENT_REVISION}',
-            themename=self._get_stored_theme(),
-            size=[window_width, window_height],
-            resizable=[False, False]
+            theme=self._get_stored_theme(),
+            size=(window_width, window_height),
+            resizable=(False, False)
         )
 
         # Set the app icon based on OS
@@ -730,7 +734,15 @@ class PSIOGM:
 
         file_menu = Menu(menubar, tearoff=0)
         sub_menu = Menu(file_menu, tearoff=0)
-        themes = ['cyborg', 'darkly', 'vapor', 'superhero', 'solar', 'morph', 'sandstone', 'simplex', 'yeti']
+        themes = [
+            'bootstrap-dark', 'bootstrap-light',
+            'nord-dark', 'nord-light',
+            'solarized-dark', 'solarized-light',
+            'dracula-dark', 'dracula-light',
+            'vapor-dark', 'vapor-light',
+            'sandstone-dark', 'sandstone-light',
+            'cyborg', 'darkly', 'superhero', 'morph', 'simplex', 'yeti',
+        ]
         for theme in themes:
             sub_menu.add_command(label=theme, command=lambda t=theme: self._switch_theme(t))
 
@@ -907,7 +919,7 @@ class PSIOGM:
         md = MessageDialog(
             message,
             title='About',
-            width=500,
+            width=70,
             padding=(20, 20)
         )
         md.show()

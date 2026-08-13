@@ -1,5 +1,5 @@
 # Built by Docker Compose only (`docker compose up --build`).
-# Prefer a local Python 3.9+ venv with Tk for everyday use.
+# Prefer a local Python 3.10+ venv with Tk for everyday use.
 
 FROM python:3.11-slim
 

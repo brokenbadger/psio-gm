@@ -8,11 +8,14 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+- **Dependencies** — `ttkbootstrap==2.2.0` and `pillow==12.3.0` (compatible set; ttkbootstrap requires Python ≥3.10 and pillow≥10,<13)
+- **GUI / ttkbootstrap 2.x** — install legacy themes for saved configs, curated themes in the menu, default theme `bootstrap-dark`, MessageDialog widths use character units
+- **Docs** — Python requirement raised to 3.10+
+- **Docker** — no root-level `Dockerfile`; Compose remains the supported entry point (`docker compose up --build`)
+
 ### Fixed
 - **Docker Compose build** — use `docker/Dockerfile` referenced from Compose instead of `dockerfile_inline` (requires Buildx and failed on hosts without it)
-
-### Changed
-- **Docker** — no root-level `Dockerfile`; Compose remains the supported entry point (`docker compose up --build`)
 
 ## [0.1.0] — 2026-08-12
 

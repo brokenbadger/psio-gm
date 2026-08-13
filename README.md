@@ -16,6 +16,7 @@ Compared with upstream at the time of forking, v0.1 includes:
 - Fixes for CU2 track matching, incomplete multi-disc sets, and PPF3 undo detection
 - Script-relative resource/DB paths (run from any working directory)
 - Rebrand (`psio_gm.py` / PSIO-GM), trimmed dependencies, Docker Compose
+- Requires Python 3.10+ (ttkbootstrap 2.x)
 - Updated About credits for upstream and this fork
 
 Full detail: [CHANGELOG.md](CHANGELOG.md). Audit/fix tracking: [GitHub Issues](https://github.com/brokenbadger/psio-gm/issues).
@@ -278,8 +279,8 @@ Windows builds will be published on the [PSIO-GM releases](https://github.com/br
 </details>
 
 ## Dependencies
-This project requires **Python 3.9+** (with Tkinter) and:
-- `ttkbootstrap` (pulls in `pillow`)
+This project requires **Python 3.10+** (with Tkinter) and:
+- `ttkbootstrap` 2.x (requires `pillow` 10–12)
 
 ### Installation Steps for running the Python scripts
 
@@ -287,6 +288,7 @@ This project requires **Python 3.9+** (with Tkinter) and:
    - Download and install Python 3 from the official website: https://www.python.org/downloads/
    - Ensure Python 3 is added to your system PATH.
    - On Linux, also install Tk support (e.g. `python3-tk` / `tk`).
+   - Python **3.10 or newer** is required (ttkbootstrap 2.x).
 
 2. **Install pip**:
    - Pip is usually included with Python 3. To check if pip is installed, run:
