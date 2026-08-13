@@ -343,12 +343,6 @@ Instead of using `./games` under the repo, point Compose at another folder when 
 4. Open http://127.0.0.1:5000
 5. Stop with `Ctrl+C`, or run `docker compose down`.
 
-If you already processed games while the container ran as root, fix ownership once (as that library’s owner):
-
-```bash
-sudo chown -R "$(id -u):$(id -g)" games
-```
-
 ## Usage (web UI)
 
 1. Optionally enable **CRC check on scan**.
