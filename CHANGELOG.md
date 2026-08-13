@@ -10,6 +10,8 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 - **Web UI** — content column centred at max **1400px** (full width on smaller screens)
+- **Web UI** — games table: Cover column moved left of Disc
+- **Docs** — README screenshot updated to the v0.2 web UI
 
 ## [0.2.3] — 2026-08-13
 

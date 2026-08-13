@@ -4,7 +4,7 @@
 Prepare PlayStation 1 bin/cue games for use with a PSIO device.<br>
 The all-in-one solution to preparing your PSIO collection.<br>
 
-![alt text](image.png)
+![PSIO-GM web UI](image.png)
 
 ## About this fork
 **PSIO-GM** is a maintained fork of [logi-26/psio-game-manager](https://github.com/logi-26/psio-game-manager).

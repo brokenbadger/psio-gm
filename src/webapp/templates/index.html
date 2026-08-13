@@ -68,9 +68,9 @@
             <tr>
               <th>Name</th>
               <th>ID</th>
+              <th>Cover</th>
               <th>Disc</th>
               <th>Bins</th>
-              <th>Cover</th>
               <th>CU2</th>
               <th>LST</th>
               <th>LibCrypt</th>
@@ -82,9 +82,9 @@
             <tr>
               <td>{{ g.name }}</td>
               <td>{{ g.id or '—' }}</td>
+              <td>{{ 'Yes' if g.cover_art else 'No' }}</td>
               <td>{{ g.disc_number }}</td>
               <td>{{ g.bin_count }}</td>
-              <td>{{ 'Yes' if g.cover_art else 'No' }}</td>
               <td>{% if not g.cu2_required %}*{% elif g.cu2_present %}Yes{% else %}No{% endif %}</td>
               <td>{% if not g.multi_disc %}*{% elif g.lst_present %}Yes{% else %}No{% endif %}</td>
               <td>{% if not g.libcrypt_required %}*{% elif g.libcrypt_applied %}Yes{% else %}No{% endif %}</td>

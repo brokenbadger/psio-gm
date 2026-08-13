@@ -72,9 +72,9 @@
         (g) => `<tr>
           <td>${escapeHtml(g.name)}</td>
           <td>${escapeHtml(g.id || "—")}</td>
+          <td>${g.cover_art ? "Yes" : "No"}</td>
           <td>${g.disc_number}</td>
           <td>${g.bin_count}</td>
-          <td>${g.cover_art ? "Yes" : "No"}</td>
           <td>${cu2Label(g)}</td>
           <td>${lstLabel(g)}</td>
           <td>${libcryptLabel(g)}</td>
