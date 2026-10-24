@@ -187,14 +187,14 @@ class Utils:
             return
 
         # If there is a PPF patch available in the local database for this game
-        if self.db.libcrypt_patch_available(game.get_id()):
+        bin_path = game.get_cue_sheet().get_bin_files()[0].get_file_path()
+        if self.db.libcrypt_patch_available(game.get_id(), bin_path):
 
             # Get the LibCrypt PPF patch from the database and copy it to the local directory
             game_full_path = join(game.get_directory_path(), game.get_directory_name())
-            self.db.copy_libcrypt_patch(game_full_path, game.get_id())
+            self.db.copy_libcrypt_patch(game_full_path, game.get_id(), bin_path)
 
             game_path = join(game.get_directory_path(), game.get_directory_name())
-            bin_path = game.get_cue_sheet().get_bin_files()[0].get_file_path()
             ppf_path = f"{join(game_path, game.get_id())}.ppf"
 
             # If the PPF patch file has been copied, patch the BIN file
@@ -446,14 +446,14 @@ class Utils:
         if not game.get_libcrypt_required() or game.get_libcrypt_applied():
             return
 
-        if self.db.libcrypt_patch_available(game.get_id()):
+        bin_path = game.get_cue_sheet().get_bin_files()[0].get_file_path()
+        if self.db.libcrypt_patch_available(game.get_id(), bin_path):
 
             # Get the LibCrypt PPF patch from the database and copy it to the local directory
             game_full_path = join(game.get_directory_path(), game.get_directory_name())
-            self.db.copy_libcrypt_patch(game_full_path, game.get_id())
+            self.db.copy_libcrypt_patch(game_full_path, game.get_id(), bin_path)
 
             game_path = join(game.get_directory_path(), game.get_directory_name())
-            bin_path = game.get_cue_sheet().get_bin_files()[0].get_file_path()
             ppf_path = f"{join(game_path, game.get_id())}.ppf"
 
             # If the PPF patch file has been copied, patch the BIN file

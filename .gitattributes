@@ -1,2 +1,6 @@
 # Exclude editor-only paths from `git archive` / GitHub source release zips
 .cursor/ export-ignore
+
+# SQLite split parts are binary. Checking them out as text strips CR bytes
+# and the merged database no longer opens, so LibCrypt lookups all fail.
+src/data/psio_assist_db_part_* binary

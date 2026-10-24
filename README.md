@@ -149,6 +149,7 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
   - SLES_029.78 - Football Manager Campionato 2001
   - SLES_036.06 - Football Manager Campionato 2002
   - SCES_019.79 - Formula One 99
+  - SCED_019.79 - Formula One 99 (Beta)
   - SCES_022.22 - Formula One 99
   - SLES_027.67 - Frontschweine (Germany)
   - SCES_017.02 - Fussball Live (Germany)

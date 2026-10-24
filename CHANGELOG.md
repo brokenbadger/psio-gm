@@ -8,7 +8,15 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+- **LibCrypt in Docker** — database split parts are marked binary and a damaged merge is rebuilt on startup. A text checkout was stripping CR bytes, so the container database would not open and LibCrypt games were treated as not requiring a patch
+- **LibCrypt multi-disc patches** — Final Fantasy VIII (Germany and Italy) and Parasite Eve II (all five languages) share one patch stored as `SLES_X…`. Those discs are now found and patched. OverBlood 2 is included; the Europe v1.1 reprints are left alone because they are not LibCrypt
+
+### Added
+- **Formula One 99 beta** — LibCrypt patch for `SCED-01979`. A beta image whose boot id is still `SCES-01979` gets this patch instead of the retail one
+
 ### Changed
+- **LibCrypt flags** — ten Japan-only titles were marked LibCrypt but are not LibCrypt discs, so they are no longer shown as needing a patch
 - **Web UI** — content column centred at max **1400px** (full width on smaller screens)
 - **Web UI** — games table: Cover column moved left of Disc
 - **Docs** — README screenshot updated to the v0.2 web UI

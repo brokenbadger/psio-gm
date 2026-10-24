@@ -7,6 +7,7 @@ Used by the Flask web UI. No GUI toolkit imports.
 from __future__ import annotations
 
 from ast import literal_eval
+from os import remove
 from os.path import exists, join
 from pathlib import Path
 from typing import Callable, Optional
@@ -60,19 +61,29 @@ class GameLibraryService:
             on_progress(stage, message, percent, game_index)
 
     def ensure_database(self) -> None:
-        """Ensure the SQLite DB exists (merged from split parts if needed)."""
+        """Ensure the SQLite DB exists and can be queried.
+
+        Docker does not ship the merged file (it is gitignored). It is rebuilt
+        from the split parts on first use. If those parts were checked out as
+        text, the merge is a file that exists but cannot be read, and every
+        LibCrypt lookup comes back empty.
+        """
         full_path = join(str(self.resource_root / "data"), self.DATABASE_NAME)
-        if exists(full_path):
+        if exists(full_path) and self.db.database_is_readable():
             return
+        if exists(full_path):
+            remove(full_path)
         # Re-use GameDatabase helpers but convert hard exits into exceptions
         if self.db._database_splits_exist():  # noqa: SLF001 — intentional reuse
             try:
                 self.db._merge_database()  # noqa: SLF001
             except Exception as error:  # noqa: BLE001
                 raise DatabaseError(f"Unable to merge database file: {error}") from error
-            if not exists(full_path):
-                raise DatabaseError("Unable to merge database file")
-            return
+            if exists(full_path) and self.db.database_is_readable():
+                return
+            raise DatabaseError(
+                "Game database is damaged, so LibCrypt patches and cover art cannot be read."
+            )
         raise DatabaseError("Database split-files not found")
 
     def scan_library(
@@ -140,14 +151,15 @@ class GameLibraryService:
             print(f"ERROR: Skipping game with missing BIN files: {cue_sheet_path}")
             return None
 
-        game_id = self.utils.parse_game_id(bin_files[0].get_file_path())
+        bin_path = bin_files[0].get_file_path()
+        game_id = self.utils.parse_game_id(bin_path)
         disc_number = self.db.get_database_disc_number(game_id) if game_id else 0
         game_name = Path(bin_files[0].get_file_name()).stem
         disc_collection = self.db.get_database_disc_collection(game_id) if game_id else []
         if disc_collection:
             disc_collection = literal_eval(disc_collection)
 
-        libcrypt_required = self.db.get_libcrypt_status(game_id) if game_id else False
+        libcrypt_required = self.db.get_libcrypt_status(game_id, bin_path) if game_id else False
 
         the_cue_sheet = Cuesheet(cue_sheet, cue_sheet_path, game_name)
         for bin_file in bin_files:
