@@ -263,27 +263,79 @@ class Utils:
 
 
     # ************************************************************************************
+    def _library_root(self, game: Game) -> Path:
+        return Path(game.get_directory_path())
+
+    def _game_directory(self, game: Game) -> Path:
+        """Directory that currently holds this game's files.
+
+        A flat library uses '.' as the folder name. Path('/games') / '.' collapses
+        to Path('/games'), whose parent is '/'. Callers must not treat that as a
+        per-game folder.
+        """
+        library = self._library_root(game)
+        name = game.get_directory_name()
+        if not name or name == '.':
+            return library
+        return library / name
+
+    def _inside_library(self, path: Path, library: Path) -> bool:
+        library = library.resolve()
+        resolved = path.resolve()
+        return resolved == library or library in resolved.parents
+
+    def _game_owned_files(self, game: Game) -> list[Path]:
+        """Files that belong to this game, not every file in a shared folder."""
+        cue = game.get_cue_sheet()
+        folder = self._game_directory(game)
+        paths = [Path(cue.get_file_path())]
+        paths.extend(Path(bin_file.get_file_path()) for bin_file in cue.get_bin_files())
+        game_name = cue.get_game_name()
+        for extra in (f'{game_name}.cu2', f'{game_name}.bmp', f'{game_name}.BMP'):
+            candidate = folder / extra
+            if candidate.is_file():
+                paths.append(candidate)
+        unique = []
+        seen = set()
+        for path in paths:
+            key = str(path)
+            if key not in seen:
+                seen.add(key)
+                unique.append(path)
+        return unique
+
     def rename_game(self, game: Game, new_game_name: str):
         """Rename game and associated files"""
 
         # Get the current game name from the CUE file
         cuesheet = game.get_cue_sheet()
         game_name = cuesheet.get_game_name()
+        library = self._library_root(game)
+        flat = game.get_directory_name() in (None, '', '.')
 
-        # If the game name has not changed
-        if game_name == new_game_name:
+        # Same name in its own folder needs no move. A flat library still has
+        # to create that folder, or the files stay loose in the library root.
+        if game_name == new_game_name and not flat:
             return
 
         # Get the BIN file (should be a single BIN file at this point)
         bin_file = cuesheet.get_bin_files()[0]
 
         # Get the original file paths
-        game_full_path = Path(game.get_directory_path()) / game.get_directory_name()
+        game_full_path = self._game_directory(game)
         original_cu2_path = game_full_path / f'{game_name}.cu2'
         original_bmp_path = game_full_path / f'{game_name}.bmp'
 
-        # Create new directory for the game
-        new_game_dir = game_full_path.parent / new_game_name
+        # A flat library has no per-game folder, so the new folder goes inside
+        # the library. Using the parent of '/games' would target filesystem root.
+        if flat:
+            new_game_dir = library / new_game_name
+        else:
+            new_game_dir = game_full_path.parent / new_game_name
+        if not self._inside_library(new_game_dir, library):
+            raise RuntimeError(
+                f"Refusing to create '{new_game_dir}' outside the library ({library})"
+            )
         new_game_dir.mkdir(exist_ok=True)
         if not new_game_dir.exists():
             print(f"Error creating directory: {new_game_dir}")
@@ -325,8 +377,13 @@ class Utils:
         game.set_directory_name(new_game_name)
         cuesheet.set_game_name(new_game_name)
 
-        # Delete the original game directory if the game has moved to a new directory
-        if game_full_path != new_game_dir:
+        # Delete the original game directory if the game has moved to a new directory.
+        # Never remove the library itself: in a flat library every game shares it.
+        if (
+            not flat
+            and game_full_path.resolve() != library.resolve()
+            and game_full_path != new_game_dir
+        ):
             rmtree(game_full_path, ignore_errors=True)
     # ************************************************************************************
 
@@ -435,6 +492,17 @@ class Utils:
 
             if new_game_name != game_name:
                 self.rename_game(game, new_game_name)
+
+        self.ensure_game_folder(game)
+    # ************************************************************************************
+
+
+    # ************************************************************************************
+    def ensure_game_folder(self, game: Game):
+        """Move a game that still sits in the library root into its own folder."""
+        if game.get_directory_name() not in (None, '', '.'):
+            return
+        self.rename_game(game, self.game_name_validator(game.get_cue_sheet().get_game_name()))
     # ************************************************************************************
 
 
@@ -534,19 +602,37 @@ class Utils:
             if multi_disc:
 
                 # Get the path for the disc
-                disc_path = join(multi_disc.get_directory_path(), multi_disc.get_directory_name())
+                library = self._library_root(multi_disc)
+                disc_dir = self._game_directory(multi_disc)
+                disc_path = str(disc_dir)
 
-                if exists(disc_path):
-                    for filename in listdir(disc_path):
-                        source_path = join(disc_path, filename)
-                        target_path = join(new_game_path, filename)
-                        file_no_ext, file_ext = splitext(filename)
+                if not exists(disc_path):
+                    continue
 
-                        # Move the files and update BIN/CUE paths only from those files
-                        self.move_file(source_path, target_path)
-                        if file_ext.lower() in ('.bin', '.cue'):
-                            self.update_game_paths(multi_disc, new_game_path, game_folder, file_no_ext)
+                # A flat library stores every game in one folder. Moving the whole
+                # directory and then deleting it removes the rest of the library.
+                if disc_dir.resolve() == library.resolve():
+                    for source in self._game_owned_files(multi_disc):
+                        if not source.is_file():
+                            continue
+                        self.move_file(str(source), join(new_game_path, source.name))
+                        if source.suffix.lower() in ('.bin', '.cue'):
+                            self.update_game_paths(
+                                multi_disc, new_game_path, game_folder, source.stem
+                            )
+                    continue
 
+                for filename in listdir(disc_path):
+                    source_path = join(disc_path, filename)
+                    target_path = join(new_game_path, filename)
+                    file_no_ext, file_ext = splitext(filename)
+
+                    # Move the files and update BIN/CUE paths only from those files
+                    self.move_file(source_path, target_path)
+                    if file_ext.lower() in ('.bin', '.cue'):
+                        self.update_game_paths(multi_disc, new_game_path, game_folder, file_no_ext)
+
+                if disc_dir.resolve() != library.resolve():
                     rmtree(disc_path)
     # ************************************************************************************
 
