@@ -12,22 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Publish repository overview
-        env:
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          jwt=$(curl -fsS -H "Content-Type: application/json" \
-            -d "{\"username\":\"brokenbadger\",\"password\":\"${DOCKERHUB_TOKEN}\"}" \
-            https://hub.docker.com/v2/users/login/ | jq -r .token)
-          test -n "$jwt" && test "$jwt" != "null"
-          jq -n --rawfile body docker/hub-overview.md \
-            --arg description "Prepare PlayStation 1 bin/cue games for a PSIO device." \
-            '{description: $description, full_description: $body}' \
-            | curl -fsS -X PATCH \
-              -H "Authorization: JWT ${jwt}" \
-              -H "Content-Type: application/json" \
-              -o /tmp/hub-repo.json \
-              -d @- \
-              https://hub.docker.com/v2/repositories/brokenbadger/psio-gm/
-          jq -r '.description' /tmp/hub-repo.json
+      - uses: peter-evans/dockerhub-description@v5
+        with:
+          username: brokenbadger
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: brokenbadger/psio-gm
+          short-description: Prepare PlayStation 1 bin/cue games for a PSIO device.
+          readme-filepath: ./docker/hub-overview.md

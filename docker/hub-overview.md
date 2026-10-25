@@ -1,5 +1,7 @@
 # PSIO-GM
 
+![PSIO-GM web UI](https://github.com/brokenbadger/psio-gm/raw/v0.2/image.png)
+
 Prepare PlayStation 1 bin/cue games for a PSIO device. This image is a local web app: point it at your games, then Scan and Process in the browser.
 
 It will:

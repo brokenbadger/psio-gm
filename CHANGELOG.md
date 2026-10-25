@@ -9,7 +9,7 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
-- **Docker Hub** — the image page has a short overview of what PSIO-GM does and how to run it
+- **Docker Hub** — the image page has a short overview of what PSIO-GM does and how to run it, including the README screenshot
 
 ## [0.2.4] — 2026-10-25
 
