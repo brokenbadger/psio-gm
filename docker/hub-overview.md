@@ -82,7 +82,7 @@ The per-user install runs Linux containers only. That is the engine this image u
 5. Find `brokenbadger/psio-gm` with the tag `stable`. Hover that row and select **Run**.
 6. Select **Optional settings**.
 7. Set the container name to `psio-gm`.
-8. Set the host port to `5000` and the container port to `5000`.
+8. Under **Ports**, container port `5000` is already listed. Type `5000` in the host port box next to it. If that section says no ports are exposed, close the dialog, go to **Images**, select **More options** on `brokenbadger/psio-gm`, select **Pull**, and open **Run** again.
 9. Under volumes, choose the games folder you created as the host path, and set the container path to `/games`.
 10. Select **Run**.
 11. In the left-hand navigation, select **Containers**.
@@ -102,7 +102,7 @@ The per-user install runs Linux containers only. That is the engine this image u
 1. Select **Images** in the left-hand navigation.
 2. Select `brokenbadger/psio-gm`, select **More options**, then select **Pull**.
 3. Select **Containers**, find `psio-gm`, select **Stop**, then delete that container.
-4. Run the image again with the same **Optional settings**: name `psio-gm`, host port `5000`, container port `5000`, and the same games folder mounted at `/games`.
+4. Run the image again with the same **Optional settings**: name `psio-gm`, host port `5000` next to container port `5000`, and the same games folder mounted at `/games`.
 
 ## Linux and macOS
 
@@ -129,4 +129,4 @@ PSIO_GAMES_DIR=/path/to/your/games docker compose up -d
 
 Open http://127.0.0.1:5000, click **Scan**, then **Process**. Later, `docker start psio-gm` and `docker stop psio-gm`.
 
-`latest` and `stable` track the newest stable release. `0.2.4` is the current release.
+`latest` and `stable` track the newest stable release. `0.2.5` is the current release.

@@ -5,7 +5,7 @@
 FROM python:3.11-slim
 
 LABEL org.opencontainers.image.title="PSIO-GM" \
-      org.opencontainers.image.version="0.2.4"
+      org.opencontainers.image.version="0.2.5"
 
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -26,5 +26,8 @@ RUN chmod -R a+rwX /app/src/data \
 WORKDIR /app/src
 
 USER psio
+
+# Docker Desktop's Run dialog only offers a host-port box for declared ports.
+EXPOSE 5000
 
 CMD ["python", "-m", "webapp", "--host", "0.0.0.0", "--port", "5000"]

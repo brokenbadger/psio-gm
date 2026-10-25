@@ -8,8 +8,13 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.5] — 2026-10-25
+
+### Fixed
+- **Docker Desktop ports** — the image declares port 5000. The Run dialog lists that container port and accepts a host port. The previous image told Windows users that no ports were exposed, so the page could not be opened
+
 ### Changed
-- **Docker Hub** — the Windows instructions use only the Docker Desktop screens, and they no longer tell per-user installs to look for a Linux/Windows container switch
+- **Docker Hub** — the Windows instructions use only the Docker Desktop screens. Under Ports, type `5000` in the host port box next to container port `5000`. Per-user installs are not told to look for a Linux/Windows container switch
 - **Downloads** — stable images are published on Docker Hub (`latest` and `stable`). GitHub Releases are for testing; future stable releases are published on Docker Hub
 
 ## [0.2.4] — 2026-10-25

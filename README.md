@@ -1,5 +1,5 @@
 # PSIO-GM
-**Version 0.2.4**
+**Version 0.2.5**
 
 Prepare PlayStation 1 bin/cue games for use with a PSIO device.<br>
 The all-in-one solution to preparing your PSIO collection.<br>
@@ -13,7 +13,7 @@ The all-in-one solution to preparing your PSIO collection.<br>
 
 ## Download
 
-Stable releases are published on [Docker Hub](https://hub.docker.com/r/brokenbadger/psio-gm) as `brokenbadger/psio-gm`. Use `latest`, or pin a version such as `0.2.4`.
+Stable releases are published on [Docker Hub](https://hub.docker.com/r/brokenbadger/psio-gm) as `brokenbadger/psio-gm`. Use `latest`, or pin a version such as `0.2.5`.
 
 GitHub Releases on this repository are for testing only. From here on, stable releases are published on Docker Hub.
 
