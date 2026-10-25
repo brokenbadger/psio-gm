@@ -8,6 +8,9 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+- **Docker Hub** — the image page has a short overview of what PSIO-GM does and how to run it
+
 ## [0.2.4] — 2026-10-25
 
 LibCrypt coverage and flat-library processing (tag **`v0.2.4`**).
