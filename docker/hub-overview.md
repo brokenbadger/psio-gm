@@ -83,4 +83,4 @@ docker compose up -d
 
 Later, stop and start the same container with `docker stop psio-gm` and `docker start psio-gm`.
 
-`latest` tracks the newest release. `0.2.4` is the current release.
+`latest` and `stable` track the newest stable release. `0.2.4` is the current release.

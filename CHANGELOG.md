@@ -10,7 +10,7 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 - **Docker Hub** — the image page explains the app, how to run it, and what each control, summary count, and column means, includes the README screenshot, and links to the GitHub source
-- **Downloads** — stable images are published on Docker Hub. GitHub Releases are for testing; future stable releases are published on Docker Hub
+- **Downloads** — stable images are published on Docker Hub (`latest` and `stable`). GitHub Releases are for testing; future stable releases are published on Docker Hub
 
 ## [0.2.4] — 2026-10-25
 

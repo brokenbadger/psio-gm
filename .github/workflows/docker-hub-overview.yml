@@ -19,37 +19,3 @@ jobs:
           repository: brokenbadger/psio-gm
           short-description: Prepare PlayStation 1 bin/cue games for a PSIO device.
           readme-filepath: ./docker/hub-overview.md
-
-      - name: Set Docker Hub categories
-        env:
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          jwt=$(curl -fsS -H "Content-Type: application/json" \
-            -d "{\"username\":\"brokenbadger\",\"password\":\"${DOCKERHUB_TOKEN}\"}" \
-            https://hub.docker.com/v2/users/login/ | jq -r .token)
-          test -n "$jwt" && test "$jwt" != "null"
-          body='{"categories":[{"name":"Developer tools","slug":"developer-tools"},{"name":"Languages & frameworks","slug":"languages-and-frameworks"}]}'
-          code=$(curl -sS -o /tmp/hub-categories.json -w '%{http_code}' -X PATCH \
-            -H "Authorization: JWT ${jwt}" \
-            -H "Content-Type: application/json" \
-            -d "$body" \
-            https://hub.docker.com/v2/repositories/brokenbadger/psio-gm/)
-          echo "category patch HTTP ${code}"
-          jq -c '.categories // .' /tmp/hub-categories.json
-          count=$(jq -r '(.categories // []) | length' /tmp/hub-categories.json)
-          if [ "$count" = "0" ]; then
-            for slug in developer-tools languages-and-frameworks; do
-              post=$(curl -sS -o /tmp/hub-category-post.json -w '%{http_code}' -X POST \
-                -H "Authorization: JWT ${jwt}" \
-                -H "Content-Type: application/json" \
-                -d "{\"category\":\"${slug}\"}" \
-                https://hub.docker.com/v2/repositories/brokenbadger/psio-gm/categories/)
-              echo "category post ${slug} HTTP ${post}"
-              jq -c . /tmp/hub-category-post.json
-            done
-          fi
-          curl -fsS -H "Authorization: JWT ${jwt}" \
-            https://hub.docker.com/v2/repositories/brokenbadger/psio-gm/ \
-            | jq -c '.categories'
-          test "$(curl -fsS https://hub.docker.com/v2/repositories/brokenbadger/psio-gm/ | jq -r '(.categories // []) | length')" != "0"
