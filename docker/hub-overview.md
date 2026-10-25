@@ -53,29 +53,56 @@ Counts after a scan:
 
 ## Windows with Docker Desktop
 
-Use Docker Desktop on Windows. It runs this Linux image. Leave Docker Desktop on Linux containers, which is the default. A normal Windows PC receives `linux/amd64`. Windows on ARM receives `linux/arm64`.
+Use Docker Desktop. It runs this Linux image for you. A normal Windows PC receives `linux/amd64`. Windows on ARM receives `linux/arm64`. You do not set `PUID` or `PGID`.
 
-1. Install [Docker Desktop for Windows](https://docs.docker.com/desktop/setup/install/windows-install/). The per-user install is the usual choice. Start Docker Desktop, accept the agreement, and wait until it is running.
-2. Clone [brokenbadger/psio-gm](https://github.com/brokenbadger/psio-gm) with GitHub Desktop or:
+### Install Docker Desktop
+
+1. Open [Install Docker Desktop on Windows](https://docs.docker.com/desktop/setup/install/windows-install/) and download **Docker Desktop for Windows - x86_64**. On a Windows on ARM PC, download the Arm build instead.
+2. Double-click `Docker Desktop Installer.exe`.
+3. When the installer asks for the installation mode, leave the per-user option selected. That is the recommended choice. Continue.
+4. On the Configuration page, leave **Use WSL 2 instead of Hyper-V** selected when that option is shown. Continue, then select **Close** when installation finishes.
+5. Docker Desktop does not open by itself. Select the Start menu, type `Docker Desktop`, and select **Docker Desktop**.
+6. The first window shows the Docker Subscription Service Agreement. Select **Accept**.
+7. Wait until the Dashboard is open and is no longer on a starting screen. The whale icon sits in the taskbar notification area. Select the **^** (Show hidden icons) arrow if you do not see it.
+
+### Stay on Linux containers
+
+1. Select the whale icon.
+2. Read the menu. **Switch to Windows containers** means you are already on Linux containers. Leave that item alone.
+3. **Switch to Linux containers** means you are on Windows containers. Select **Switch to Linux containers** and wait until Docker Desktop has restarted.
+4. Select **Dashboard** on the whale menu if the Dashboard is not already open.
+
+Signing in is optional. The **Sign in** button is in the top-right corner of the Dashboard. Signing in raises the number of images you can pull.
+
+### Get the games folder
+
+1. Clone [brokenbadger/psio-gm](https://github.com/brokenbadger/psio-gm). In GitHub Desktop, use **File**, then **Clone repository**. Or, in PowerShell:
 
 ```powershell
 git clone https://github.com/brokenbadger/psio-gm.git
-cd psio-gm
 ```
 
-3. Put each game's `.bin` and `.cue` files in the `games` folder inside that clone.
-4. Open PowerShell in the clone folder and start the stable image:
+2. In File Explorer, open the cloned `psio-gm` folder. Put each game's `.bin` and `.cue` files in the `games` folder there.
+
+### First start
+
+1. In the Docker Desktop Dashboard, select the **Terminal** icon in the bottom-right corner, next to the version number.
+2. In that terminal, go to the cloned folder. Example:
 
 ```powershell
+cd $HOME\Projects\psio-gm
 docker compose pull
 docker compose up -d
 ```
 
-5. Open http://127.0.0.1:5000, click **Scan**, then **Process**.
+Change the `cd` path if you cloned somewhere else.
 
-Docker Desktop handles the game files, so do not set `PUID` or `PGID`.
+3. In the left-hand navigation, select **Containers**.
+4. In the search field, type `psio-gm`. If the row is missing, turn off **Only show running containers**.
+5. Select the **psio-gm** row. On its page, use the action that opens the published port in a browser, or open http://127.0.0.1:5000 yourself.
+6. On that page, click **Scan**, then **Process**.
 
-Games stored somewhere else:
+Games kept in another folder, still from the Docker Desktop terminal, in the cloned folder:
 
 ```powershell
 $env:PSIO_GAMES_DIR="D:\PS1\games"
@@ -83,14 +110,14 @@ docker compose pull
 docker compose up -d
 ```
 
-Later, start and stop the same container from the Docker Desktop window, or in PowerShell:
+### Later
 
-```powershell
-docker start psio-gm
-docker stop psio-gm
-```
+1. Open Docker Desktop from the Start menu, or select the whale icon and then **Dashboard**.
+2. Select **Containers** in the left-hand navigation.
+3. Find **psio-gm**. Select **Start** or **Stop** on that row. Those buttons act on the whole Compose project.
+4. With it started, open http://127.0.0.1:5000.
 
-When a new stable image is published, run `docker compose pull` and `docker compose up -d` again from the clone folder.
+When a new stable image is published, open the **Terminal** icon again, `cd` to the cloned folder, then run `docker compose pull` and `docker compose up -d`.
 
 ## Linux and macOS
 
