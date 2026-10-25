@@ -129,4 +129,4 @@ PSIO_GAMES_DIR=/path/to/your/games docker compose up -d
 
 Open http://127.0.0.1:5000, click **Scan**, then **Process**. Later, `docker start psio-gm` and `docker stop psio-gm`.
 
-`latest` and `stable` track the newest stable release. `0.2.5` is the current release.
+`stable` is the only tag. It is replaced when a new stable release is published.

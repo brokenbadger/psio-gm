@@ -8,6 +8,9 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+- **Docker Hub** — only `brokenbadger/psio-gm:stable` is published, and only when a release is marked stable. `latest` and the version tags are removed. Pushing a git tag no longer publishes an image
+
 ## [0.2.5] — 2026-10-25
 
 ### Fixed
