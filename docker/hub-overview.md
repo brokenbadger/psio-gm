@@ -170,7 +170,15 @@ Package names:
 - Fedora 41 and newer: `moby-engine`, `docker-cli`, and `docker-compose`.
 - Arch Linux: `docker` and `docker-compose`.
 
-Start Docker before you continue. On a systemd distribution that is `sudo systemctl enable --now docker`. Your user must be allowed to run Docker, usually by joining the `docker` group. Log out and back in after joining that group.
+Start Docker before you continue. On a systemd distribution that is `sudo systemctl enable --now docker`.
+
+Your user must be allowed to run Docker. The Docker package creates a `docker` group for that. In a terminal, run `groups`. If `docker` is already in the list, nothing more is needed. If it is missing, join the group:
+
+```bash
+sudo usermod -aG docker "$USER"
+```
+
+Log out of the desktop session and log back in. The new group applies to new logins, so a terminal that was already open will not see it. Open a new terminal and run `groups` again. `docker` should now be listed.
 
 Clone this repository. Open a terminal in the folder that contains `docker-compose.yml`. Every command below is typed in that terminal. Put each game's `.bin` and `.cue` files in `games`. `PUID` and `PGID` make the container write files as your user:
 

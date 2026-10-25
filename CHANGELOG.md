@@ -13,6 +13,7 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Docker Hub** — macOS instructions use the Docker Desktop screens, in the same way as Windows. Linux keeps the terminal steps
 - **Docker Hub** — the Linux commands for another games folder include `PUID` and `PGID`, so that folder is still written as the host user
 - **Docker Hub** — the Linux section explains that Docker Engine and Compose v2 are installed from the distribution repositories, that Docker Hub is the download site, and that the commands are typed in a terminal in the folder that contains `docker-compose.yml`
+- **Docker Hub** — the Linux section shows how to check membership of the `docker` group and how to join it when the commands would otherwise be refused
 
 ## [0.2.5] — 2026-10-25
 
