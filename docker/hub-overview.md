@@ -74,54 +74,46 @@ Use Docker Desktop. It runs this Linux image for you. A normal Windows PC receiv
 
 Signing in is optional. The **Sign in** button is in the top-right corner of the Dashboard. Signing in raises the number of images you can pull.
 
-### Get the games folder
+### Prepare the games folder
 
-1. Clone [brokenbadger/psio-gm](https://github.com/brokenbadger/psio-gm). In GitHub Desktop, use **File**, then **Clone repository**. Or, in PowerShell:
+1. Open File Explorer.
+2. Create a folder for the games, for example `C:\Users\YourName\PSIO\games`.
+3. Copy each game's `.bin` and `.cue` files into that folder.
 
-```powershell
-git clone https://github.com/brokenbadger/psio-gm.git
-```
+### Pull and run the image
 
-2. In File Explorer, open the cloned `psio-gm` folder. Put each game's `.bin` and `.cue` files in the `games` folder there.
-
-### First start
-
-1. In the Docker Desktop Dashboard, select the **Terminal** icon in the bottom-right corner, next to the version number.
-2. In that terminal, go to the cloned folder. Example:
-
-```powershell
-cd $HOME\Projects\psio-gm
-docker compose pull
-docker compose up -d
-```
-
-Change the `cd` path if you cloned somewhere else.
-
-3. In the left-hand navigation, select **Containers**.
-4. In the search field, type `psio-gm`. If the row is missing, turn off **Only show running containers**.
-5. Select the **psio-gm** row. On its page, use the action that opens the published port in a browser, or open http://127.0.0.1:5000 yourself.
-6. On that page, click **Scan**, then **Process**.
-
-Games kept in another folder, still from the Docker Desktop terminal, in the cloned folder:
-
-```powershell
-$env:PSIO_GAMES_DIR="D:\PS1\games"
-docker compose pull
-docker compose up -d
-```
+1. In the Docker Desktop Dashboard, select the search box in the header.
+2. Type `brokenbadger/psio-gm` and select that image from the results.
+3. Pull the `stable` tag.
+4. In the left-hand navigation, select **Images**.
+5. Find `brokenbadger/psio-gm` with the tag `stable`. Hover that row and select **Run**.
+6. Select **Optional settings**.
+7. Set the container name to `psio-gm`.
+8. Set the host port to `5000` and the container port to `5000`.
+9. Under volumes, choose the games folder you created as the host path, and set the container path to `/games`.
+10. Select **Run**.
+11. In the left-hand navigation, select **Containers**.
+12. In the search field, type `psio-gm`. If the row is missing, turn off **Only show running containers**.
+13. Select the `psio-gm` row, then open its published port in a browser. The address is http://127.0.0.1:5000.
+14. On that page, click **Scan**, then **Process**.
 
 ### Later
 
 1. Open Docker Desktop from the Start menu, or select the whale icon and then **Dashboard**.
 2. Select **Containers** in the left-hand navigation.
-3. Find **psio-gm**. Select **Start** or **Stop** on that row. Those buttons act on the whole Compose project.
+3. Find `psio-gm`. Select **Start** or **Stop** on that row.
 4. With it started, open http://127.0.0.1:5000.
 
-When a new stable image is published, open the **Terminal** icon again, `cd` to the cloned folder, then run `docker compose pull` and `docker compose up -d`.
+### Update to a newer stable image
+
+1. Select **Images** in the left-hand navigation.
+2. Select `brokenbadger/psio-gm`, select **More options**, then select **Pull**.
+3. Select **Containers**, find `psio-gm`, select **Stop**, then delete that container.
+4. Run the image again with the same **Optional settings**: name `psio-gm`, host port `5000`, container port `5000`, and the same games folder mounted at `/games`.
 
 ## Linux and macOS
 
-macOS uses Docker Desktop, the same way as Windows, so do not set `PUID` or `PGID`. From the clone folder, with each game's `.bin` and `.cue` in `games`:
+On macOS with Docker Desktop, do not set `PUID` or `PGID`. From the clone folder, with each game's `.bin` and `.cue` in `games`:
 
 ```bash
 docker compose pull

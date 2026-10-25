@@ -9,7 +9,7 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
-- **Docker Hub** — the image page explains the app, how to run it, and what each control, summary count, and column means, includes the README screenshot, links to the GitHub source, and gives click-by-click Windows Docker Desktop setup
+- **Docker Hub** — the Windows instructions use only the Docker Desktop screens: search, pull, Run, and the Containers start and stop buttons
 - **Downloads** — stable images are published on Docker Hub (`latest` and `stable`). GitHub Releases are for testing; future stable releases are published on Docker Hub
 
 ## [0.2.4] — 2026-10-25
