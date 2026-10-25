@@ -180,7 +180,16 @@ sudo usermod -aG docker "$USER"
 
 Log out of the desktop session and log back in. The new group applies to new logins, so a terminal that was already open will not see it. Open a new terminal and run `groups` again. `docker` should now be listed.
 
-Clone this repository. Open a terminal in the folder that contains `docker-compose.yml`. Every command below is typed in that terminal. Put each game's `.bin` and `.cue` files in `games`. `PUID` and `PGID` make the container write files as your user:
+Install Git from your distribution's repositories if `git` is not already available. The package name is `git`.
+
+Open a terminal in the folder where you want the project to live, then clone it and enter the new folder:
+
+```bash
+git clone https://github.com/brokenbadger/psio-gm.git
+cd psio-gm
+```
+
+That folder contains `docker-compose.yml`. Every command below is typed in this same terminal, after `cd psio-gm`. Create a `games` folder there if it is not present, and copy each game's `.bin` and `.cue` files into it. `PUID` and `PGID` make the container write files as your user:
 
 ```bash
 PUID=$(id -u) PGID=$(id -g) docker compose pull
