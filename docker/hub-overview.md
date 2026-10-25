@@ -104,16 +104,60 @@ The per-user install runs Linux containers only. That is the engine this image u
 3. Select **Containers**, find `psio-gm`, select **Stop**, then delete that container.
 4. Run the image again with the same **Optional settings**: name `psio-gm`, host port `5000` next to container port `5000`, and the same games folder mounted at `/games`.
 
-## Linux and macOS
+## macOS with Docker Desktop
 
-On macOS with Docker Desktop, do not set `PUID` or `PGID`. From the clone folder, with each game's `.bin` and `.cue` in `games`:
+Use Docker Desktop. It runs this Linux image for you. A Mac with Apple silicon receives `linux/arm64`. A Mac with an Intel chip receives `linux/amd64`. You do not set `PUID` or `PGID`.
 
-```bash
-docker compose pull
-docker compose up -d
-```
+### Install Docker Desktop
 
-On Linux with Docker Engine, match the files to your user:
+1. Open [Install Docker Desktop on Mac](https://docs.docker.com/desktop/setup/install/mac-install/). Download **Docker Desktop for Mac with Apple silicon** or **Docker Desktop for Mac with Intel chip**, matching the Mac.
+2. Double-click `Docker.dmg`.
+3. Drag the Docker icon onto the Applications folder.
+4. Open the Applications folder and double-click **Docker**.
+5. The first window shows the Docker Subscription Service Agreement. Select **Accept**.
+6. If a settings window is shown, leave **Use recommended settings** selected and select **Finish**. Enter your Mac password if macOS asks for it. If that window is not shown, Docker Desktop opens on its own.
+7. Wait until the Dashboard is open and is no longer on a starting screen. The whale icon sits in the menu bar at the top of the screen.
+
+### Prepare the games folder
+
+1. Open Finder.
+2. Create a folder for the games, for example `/Users/YourName/PSIO/games`.
+3. Copy each game's `.bin` and `.cue` files into that folder.
+
+### Pull and run the image
+
+1. In the Docker Desktop Dashboard, select the search box in the header.
+2. Type `brokenbadger/psio-gm` and select that image from the results.
+3. Pull the `stable` tag.
+4. In the left-hand navigation, select **Images**.
+5. Find `brokenbadger/psio-gm` with the tag `stable`. Hover that row and select **Run**.
+6. Select **Optional settings**.
+7. Set the container name to `psio-gm`.
+8. Under **Ports**, container port `5000` is already listed. Type `5000` in the host port box next to it. If that section says no ports are exposed, close the dialog, go to **Images**, select **More options** on `brokenbadger/psio-gm`, select **Pull**, and open **Run** again.
+9. Under volumes, choose the games folder you created as the host path, and set the container path to `/games`.
+10. Select **Run**.
+11. In the left-hand navigation, select **Containers**.
+12. In the search field, type `psio-gm`. If the row is missing, turn off **Only show running containers**.
+13. Select the `psio-gm` row, then open its published port in a browser. The address is http://127.0.0.1:5000.
+14. On that page, click **Scan**, then **Process**.
+
+### Later
+
+1. Select the whale icon in the menu bar, then **Dashboard**. You can also open **Docker** from the Applications folder.
+2. Select **Containers** in the left-hand navigation.
+3. Find `psio-gm`. Select **Start** or **Stop** on that row.
+4. With it started, open http://127.0.0.1:5000.
+
+### Update to a newer stable image
+
+1. Select **Images** in the left-hand navigation.
+2. Select `brokenbadger/psio-gm`, select **More options**, then select **Pull**.
+3. Select **Containers**, find `psio-gm`, select **Stop**, then delete that container.
+4. Run the image again with the same **Optional settings**: name `psio-gm`, host port `5000` next to container port `5000`, and the same games folder mounted at `/games`.
+
+## Linux
+
+Clone this repository and put each game's `.bin` and `.cue` files in `games`. On Linux with Docker Engine, match the files to your user:
 
 ```bash
 PUID=$(id -u) PGID=$(id -g) docker compose pull

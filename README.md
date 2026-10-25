@@ -291,48 +291,13 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 
 You need [Docker Desktop](https://docs.docker.com/get-started/) (Windows, macOS, or Linux) **or** [Docker Engine](https://docs.docker.com/engine/) with [Compose](https://docs.docker.com/compose/) v2.
 
-Download the stable image from [Docker Hub](https://hub.docker.com/r/brokenbadger/psio-gm). This repository supplies the Compose file. `docker compose up --build -d` builds from a source checkout and is for testing. GitHub Releases are for testing only; stable releases are published on Docker Hub.
+Download the stable image from [Docker Hub](https://hub.docker.com/r/brokenbadger/psio-gm). On Windows and macOS, follow the Docker Desktop steps on that page. This repository supplies the Compose file for Linux. `docker compose up --build -d` builds from a source checkout and is for testing. GitHub Releases are for testing only; stable releases are published on Docker Hub.
 
 The image runs as a non-root user. On **Docker Desktop**, bind-mount ownership is handled for you. On **Docker Engine** (typical Linux server/desktop install without Desktop), pass `PUID=$(id -u) PGID=$(id -g)` so processed files match your host user. The `-d` flag runs the app in the background so you can close the terminal.
 
-```bash
-docker compose pull
-docker compose up -d
-```
-
 ### Docker Desktop
 
-1. Install Docker Desktop and start it (wait until it shows **Running**).
-2. Clone this repository to your PC (GitHub Desktop, `git clone`, or download the ZIP and extract it).
-3. Put your PS1 games in a `games` folder inside the repo (one subfolder per game, each with bin/cue files).  
-   Example: `psio-gm/games/Crash Bandicoot/...`
-4. In Docker Desktop, open a terminal in the repo folder:  
-   **File** → open the project folder, or use **Terminal** / your system terminal (`cd` into the repo root).
-5. Start the stable image:
-   ```bash
-   docker compose pull
-   docker compose up -d
-   ```
-   The app keeps running in the background (you can close the terminal). Use `docker compose up --build -d` only when testing a source checkout.
-6. In your browser, open [http://127.0.0.1:5000](http://127.0.0.1:5000)
-
-**Custom games folder (Docker Desktop)**
-
-Instead of using `./games` under the repo, point Compose at another folder when you start:
-
-- macOS / Linux terminal:
-  ```bash
-  PSIO_GAMES_DIR=/path/to/your/games docker compose pull
-  PSIO_GAMES_DIR=/path/to/your/games docker compose up -d
-  ```
-- Windows PowerShell:
-  ```powershell
-  $env:PSIO_GAMES_DIR="C:\path\to\your\games"; docker compose pull; docker compose up -d
-  ```
-- Windows Command Prompt:
-  ```bat
-  set PSIO_GAMES_DIR=C:\path\to\your\games&& docker compose pull && docker compose up -d
-  ```
+Windows and macOS use the Docker Desktop screens. The click-by-click steps are on the [Docker Hub page](https://hub.docker.com/r/brokenbadger/psio-gm). You do not set `PUID` or `PGID`.
 
 ### Command line (Docker Engine)
 
@@ -358,16 +323,7 @@ After the first `docker compose up -d`, the container already exists. Day to day
 
 **Docker Desktop**
 
-- Start:
-  ```bash
-  docker start psio-gm
-  ```
-  Or start the container/stack in Docker Desktop.
-- Stop:
-  ```bash
-  docker stop psio-gm
-  ```
-  Or stop it in Docker Desktop.
+- Open Docker Desktop, select **Containers**, and select **Start** or **Stop** on `psio-gm`.
 - Open [http://127.0.0.1:5000](http://127.0.0.1:5000) while it is running.
 
 **Docker Engine**
@@ -382,7 +338,7 @@ After the first `docker compose up -d`, the container already exists. Day to day
   ```
 - Open [http://127.0.0.1:5000](http://127.0.0.1:5000) while it is running.
 
-Use `docker compose pull` and `docker compose up -d` again when a new stable image is published. Use `docker compose up --build -d` when testing a source checkout. Use `docker compose down` only when you want to remove the container (then create it again with `up -d` before `start`/`stop` will work).
+On Linux, use `docker compose pull` and `docker compose up -d` again when a new stable image is published. On Windows and macOS, follow the update steps on the [Docker Hub page](https://hub.docker.com/r/brokenbadger/psio-gm). Use `docker compose up --build -d` when testing a source checkout. Use `docker compose down` only when you want to remove the container (then create it again with `up -d` before `start`/`stop` will work).
 
 ## Usage (web UI)
 
