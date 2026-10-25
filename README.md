@@ -11,6 +11,12 @@ The all-in-one solution to preparing your PSIO collection.<br>
 
 **v0.2** runs as a **Docker** web app (Flask UI on localhost). Put games in a host folder, start Compose, open the UI. For the older Tk desktop app, use branch **`v0.1`**.
 
+## Download
+
+Stable releases are published on [Docker Hub](https://hub.docker.com/r/brokenbadger/psio-gm) as `brokenbadger/psio-gm`. Use `latest`, or pin a version such as `0.2.4`.
+
+GitHub Releases on this repository are for testing only. From here on, stable releases are published on Docker Hub.
+
 Compared with upstream at the time of forking, this fork includes:
 
 - Safer multi-BIN merging (no delete-before-verify)
@@ -285,9 +291,9 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 
 You need [Docker Desktop](https://docs.docker.com/get-started/) (Windows, macOS, or Linux) **or** [Docker Engine](https://docs.docker.com/engine/) with [Compose](https://docs.docker.com/compose/) v2.
 
-The image runs as a non-root user. On **Docker Desktop**, bind-mount ownership is handled for you — use plain `docker compose up --build -d`. On **Docker Engine** (typical Linux server/desktop install without Desktop), pass `PUID=$(id -u) PGID=$(id -g)` so processed files match your host user. The `-d` flag runs the app in the background so you can close the terminal.
+Download the stable image from [Docker Hub](https://hub.docker.com/r/brokenbadger/psio-gm). This repository supplies the Compose file. `docker compose up --build -d` builds from a source checkout and is for testing. GitHub Releases are for testing only; stable releases are published on Docker Hub.
 
-Release tags are published to [Docker Hub](https://hub.docker.com/r/brokenbadger/psio-gm) as `brokenbadger/psio-gm` (this release: `0.2.4`, also `latest`). Compose uses that name. `docker compose up --build -d` builds from this repository. To run the published image instead, omit `--build`:
+The image runs as a non-root user. On **Docker Desktop**, bind-mount ownership is handled for you. On **Docker Engine** (typical Linux server/desktop install without Desktop), pass `PUID=$(id -u) PGID=$(id -g)` so processed files match your host user. The `-d` flag runs the app in the background so you can close the terminal.
 
 ```bash
 docker compose pull
@@ -302,11 +308,12 @@ docker compose up -d
    Example: `psio-gm/games/Crash Bandicoot/...`
 4. In Docker Desktop, open a terminal in the repo folder:  
    **File** → open the project folder, or use **Terminal** / your system terminal (`cd` into the repo root).
-5. Start the app:
+5. Start the stable image:
    ```bash
-   docker compose up --build -d
+   docker compose pull
+   docker compose up -d
    ```
-   First run builds the image; the app keeps running in the background (you can close the terminal).
+   The app keeps running in the background (you can close the terminal). Use `docker compose up --build -d` only when testing a source checkout.
 6. In your browser, open [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
 **Custom games folder (Docker Desktop)**
@@ -315,15 +322,16 @@ Instead of using `./games` under the repo, point Compose at another folder when 
 
 - macOS / Linux terminal:
   ```bash
-  PSIO_GAMES_DIR=/path/to/your/games docker compose up --build -d
+  PSIO_GAMES_DIR=/path/to/your/games docker compose pull
+  PSIO_GAMES_DIR=/path/to/your/games docker compose up -d
   ```
 - Windows PowerShell:
   ```powershell
-  $env:PSIO_GAMES_DIR="C:\path\to\your\games"; docker compose up --build -d
+  $env:PSIO_GAMES_DIR="C:\path\to\your\games"; docker compose pull; docker compose up -d
   ```
 - Windows Command Prompt:
   ```bat
-  set PSIO_GAMES_DIR=C:\path\to\your\games&& docker compose up --build -d
+  set PSIO_GAMES_DIR=C:\path\to\your\games&& docker compose pull && docker compose up -d
   ```
 
 ### Command line (Docker Engine)
@@ -333,18 +341,20 @@ Instead of using `./games` under the repo, point Compose at another folder when 
    To use a different folder, set `PSIO_GAMES_DIR` in step 3.
 3. Start the app:
    ```bash
-   PUID=$(id -u) PGID=$(id -g) docker compose up --build -d
+   PUID=$(id -u) PGID=$(id -g) docker compose pull
+   PUID=$(id -u) PGID=$(id -g) docker compose up -d
    ```
    Or with a custom library path:
    ```bash
-   PUID=$(id -u) PGID=$(id -g) PSIO_GAMES_DIR=/path/to/your/games docker compose up --build -d
+   PUID=$(id -u) PGID=$(id -g) PSIO_GAMES_DIR=/path/to/your/games docker compose pull
+   PUID=$(id -u) PGID=$(id -g) PSIO_GAMES_DIR=/path/to/your/games docker compose up -d
    ```
    The app keeps running in the background (you can close the terminal).
 4. Open [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
-### Start and stop later (after the first build)
+### Start and stop later
 
-After the first `docker compose up --build -d`, the container already exists. Day to day, start and stop that same container (this avoids creating duplicates):
+After the first `docker compose up -d`, the container already exists. Day to day, start and stop that same container (this avoids creating duplicates):
 
 **Docker Desktop**
 
@@ -372,7 +382,7 @@ After the first `docker compose up --build -d`, the container already exists. Da
   ```
 - Open [http://127.0.0.1:5000](http://127.0.0.1:5000) while it is running.
 
-Use `docker compose up --build -d` again only when you pull app updates or change the Dockerfile / Compose file. Use `docker compose down` only when you want to remove the container (then create it again with `up -d` before `start`/`stop` will work).
+Use `docker compose pull` and `docker compose up -d` again when a new stable image is published. Use `docker compose up --build -d` when testing a source checkout. Use `docker compose down` only when you want to remove the container (then create it again with `up -d` before `start`/`stop` will work).
 
 ## Usage (web UI)
 

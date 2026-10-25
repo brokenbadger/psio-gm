@@ -4,6 +4,8 @@
 
 Prepare PlayStation 1 bin/cue games for a PSIO device. This image is a local web app: point it at your games, then Scan and Process in the browser.
 
+Source code: [github.com/brokenbadger/psio-gm](https://github.com/brokenbadger/psio-gm). Stable images are published on this page. GitHub Releases on that repository are for testing; future stable releases are published here.
+
 It will:
 
 - Merge multi-bin games into a single BIN

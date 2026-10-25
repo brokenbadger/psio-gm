@@ -19,3 +19,21 @@ jobs:
           repository: brokenbadger/psio-gm
           short-description: Prepare PlayStation 1 bin/cue games for a PSIO device.
           readme-filepath: ./docker/hub-overview.md
+
+      - name: Set Docker Hub categories
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          jwt=$(curl -fsS -H "Content-Type: application/json" \
+            -d "{\"username\":\"brokenbadger\",\"password\":\"${DOCKERHUB_TOKEN}\"}" \
+            https://hub.docker.com/v2/users/login/ | jq -r .token)
+          test -n "$jwt" && test "$jwt" != "null"
+          code=$(curl -sS -o /tmp/hub-categories.json -w '%{http_code}' -X PATCH \
+            -H "Authorization: Bearer ${jwt}" \
+            -H "Content-Type: application/json" \
+            -d '{"categories":["developer-tools","languages-and-frameworks"]}' \
+            https://hub.docker.com/v2/repositories/brokenbadger/psio-gm/)
+          echo "category update HTTP ${code}"
+          jq -c '.categories // .' /tmp/hub-categories.json
+          test "$code" = "200"
