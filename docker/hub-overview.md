@@ -65,14 +65,7 @@ Use Docker Desktop. It runs this Linux image for you. A normal Windows PC receiv
 6. The first window shows the Docker Subscription Service Agreement. Select **Accept**.
 7. Wait until the Dashboard is open and is no longer on a starting screen. The whale icon sits in the taskbar notification area. Select the **^** (Show hidden icons) arrow if you do not see it.
 
-### Stay on Linux containers
-
-1. Select the whale icon.
-2. Read the menu. **Switch to Windows containers** means you are already on Linux containers. Leave that item alone.
-3. **Switch to Linux containers** means you are on Windows containers. Select **Switch to Linux containers** and wait until Docker Desktop has restarted.
-4. Select **Dashboard** on the whale menu if the Dashboard is not already open.
-
-Signing in is optional. The **Sign in** button is in the top-right corner of the Dashboard. Signing in raises the number of images you can pull.
+The per-user install runs Linux containers only. That is the engine this image uses, so there is no container-type switch to change.
 
 ### Prepare the games folder
 

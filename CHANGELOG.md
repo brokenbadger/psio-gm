@@ -9,7 +9,7 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
-- **Docker Hub** — the Windows instructions use only the Docker Desktop screens: search, pull, Run, and the Containers start and stop buttons
+- **Docker Hub** — the Windows instructions use only the Docker Desktop screens, and they no longer tell per-user installs to look for a Linux/Windows container switch
 - **Downloads** — stable images are published on Docker Hub (`latest` and `stable`). GitHub Releases are for testing; future stable releases are published on Docker Hub
 
 ## [0.2.4] — 2026-10-25
