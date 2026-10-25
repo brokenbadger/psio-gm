@@ -1,5 +1,5 @@
 # PSIO-GM
-**Version 0.2.3**
+**Version 0.2.4**
 
 Prepare PlayStation 1 bin/cue games for use with a PSIO device.<br>
 The all-in-one solution to preparing your PSIO collection.<br>
@@ -286,6 +286,13 @@ Organises and standardises PlayStation 1 games into a format acceptable by the P
 You need [Docker Desktop](https://docs.docker.com/get-started/) (Windows, macOS, or Linux) **or** [Docker Engine](https://docs.docker.com/engine/) with [Compose](https://docs.docker.com/compose/) v2.
 
 The image runs as a non-root user. On **Docker Desktop**, bind-mount ownership is handled for you — use plain `docker compose up --build -d`. On **Docker Engine** (typical Linux server/desktop install without Desktop), pass `PUID=$(id -u) PGID=$(id -g)` so processed files match your host user. The `-d` flag runs the app in the background so you can close the terminal.
+
+Release tags are published to [Docker Hub](https://hub.docker.com/r/brokenbadger/psio-gm) as `brokenbadger/psio-gm` (this release: `0.2.4`, also `latest`). Compose uses that name. `docker compose up --build -d` builds from this repository. To run the published image instead, omit `--build`:
+
+```bash
+docker compose pull
+docker compose up -d
+```
 
 ### Docker Desktop
 

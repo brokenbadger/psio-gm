@@ -8,6 +8,10 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.4] — 2026-10-25
+
+LibCrypt coverage and flat-library processing (tag **`v0.2.4`**).
+
 ### Fixed
 - **Flat library rename** — games placed directly in the library folder were renamed under `/` (permission denied in Docker). Renames now stay inside the library, and the multi-disc step no longer deletes that shared folder. A game whose name does not change, such as a homebrew image with no Redump title, is still moved into its own folder
 - **LibCrypt in Docker** — database split parts are marked binary and a damaged merge is rebuilt on startup. A text checkout was stripping CR bytes, so the container database would not open and LibCrypt games were treated as not requiring a patch
@@ -15,12 +19,14 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 - **Formula One 99 beta** — LibCrypt patch for `SCED-01979`. A beta image whose boot id is still `SCES-01979` gets this patch instead of the retail one
+- **Docker Hub** — each `v*` release tag publishes `brokenbadger/psio-gm` (`0.2.4` and `latest`)
 
 ### Changed
 - **LibCrypt flags** — ten Japan-only titles were marked LibCrypt but are not LibCrypt discs, so they are no longer shown as needing a patch
 - **Web UI** — content column centred at max **1400px** (full width on smaller screens)
 - **Web UI** — games table: Cover column moved left of Disc
 - **Docs** — README screenshot updated to the v0.2 web UI
+- **Image** — tag `brokenbadger/psio-gm:0.2.4`
 
 ## [0.2.3] — 2026-08-13
 
