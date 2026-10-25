@@ -301,7 +301,9 @@ Windows and macOS use the Docker Desktop screens. The click-by-click steps are o
 
 ### Command line (Docker Engine)
 
-1. Clone this repository and open a terminal in the repo root.
+On Linux, install Docker Engine and Docker Compose v2 from your distribution's package repositories. Docker Hub is where the image is downloaded from, not a program you install. Package names and the rest of the Linux steps are on the [Docker Hub page](https://hub.docker.com/r/brokenbadger/psio-gm).
+
+1. Clone this repository and open a terminal in the folder that contains `docker-compose.yml`. The commands below are typed in that terminal.
 2. Put your PS1 games under `./games` (one subfolder per game, each with bin/cue files).  
    To use a different folder, set `PSIO_GAMES_DIR` in step 3.
 3. Start the app:

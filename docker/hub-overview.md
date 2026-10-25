@@ -157,7 +157,22 @@ Use Docker Desktop. It runs this Linux image for you. A Mac with Apple silicon r
 
 ## Linux
 
-Clone this repository and put each game's `.bin` and `.cue` files in `games`. On Linux with Docker Engine, match the files to your user:
+On Linux, install Docker Engine from your distribution's own package repositories. Docker Hub is the website this image is downloaded from. It is not a program you install, and these steps do not use Docker Desktop.
+
+Install two packages:
+
+- **Docker Engine**, which runs the containers.
+- **Docker Compose v2**, which supplies the `docker compose` command below.
+
+Package names:
+
+- Debian and Ubuntu: `docker.io` and `docker-compose-v2`. On Debian 13 the Compose package is named `docker-compose`. Debian 12's `docker-compose` package is version 1 and does not provide `docker compose`.
+- Fedora 41 and newer: `moby-engine`, `docker-cli`, and `docker-compose`.
+- Arch Linux: `docker` and `docker-compose`.
+
+Start Docker before you continue. On a systemd distribution that is `sudo systemctl enable --now docker`. Your user must be allowed to run Docker, usually by joining the `docker` group. Log out and back in after joining that group.
+
+Clone this repository. Open a terminal in the folder that contains `docker-compose.yml`. Every command below is typed in that terminal. Put each game's `.bin` and `.cue` files in `games`. `PUID` and `PGID` make the container write files as your user:
 
 ```bash
 PUID=$(id -u) PGID=$(id -g) docker compose pull
@@ -165,6 +180,8 @@ PUID=$(id -u) PGID=$(id -g) docker compose up -d
 ```
 
 Another games folder:
+
+Stay in the folder that contains `docker-compose.yml`. `PSIO_GAMES_DIR` is the games folder, which can be somewhere else:
 
 ```bash
 PUID=$(id -u) PGID=$(id -g) PSIO_GAMES_DIR=/path/to/your/games docker compose pull
