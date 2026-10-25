@@ -167,8 +167,8 @@ PUID=$(id -u) PGID=$(id -g) docker compose up -d
 Another games folder:
 
 ```bash
-PSIO_GAMES_DIR=/path/to/your/games docker compose pull
-PSIO_GAMES_DIR=/path/to/your/games docker compose up -d
+PUID=$(id -u) PGID=$(id -g) PSIO_GAMES_DIR=/path/to/your/games docker compose pull
+PUID=$(id -u) PGID=$(id -g) PSIO_GAMES_DIR=/path/to/your/games docker compose up -d
 ```
 
 Open http://127.0.0.1:5000, click **Scan**, then **Process**. Later, `docker start psio-gm` and `docker stop psio-gm`.

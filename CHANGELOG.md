@@ -11,6 +11,7 @@ Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Changed
 - **Docker Hub** — only `brokenbadger/psio-gm:stable` is published, and only when a release is marked stable. `latest` and the version tags are removed. Pushing a git tag no longer publishes an image. Publishing `stable` also deletes any other tag
 - **Docker Hub** — macOS instructions use the Docker Desktop screens, in the same way as Windows. Linux keeps the terminal steps
+- **Docker Hub** — the Linux commands for another games folder include `PUID` and `PGID`, so that folder is still written as the host user
 
 ## [0.2.5] — 2026-10-25
 

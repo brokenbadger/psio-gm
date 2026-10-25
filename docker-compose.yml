@@ -10,7 +10,7 @@
 #   PUID=$(id -u) PGID=$(id -g) docker compose up --build -d
 #
 # Custom games folder (prefer ./relative or absolute path):
-#   PSIO_GAMES_DIR=/home/you/ps1/games docker compose up --build -d
+#   PUID=$(id -u) PGID=$(id -g) PSIO_GAMES_DIR=/home/you/ps1/games docker compose up --build -d
 
 name: psio-gm
 
