@@ -51,36 +51,70 @@ Counts after a scan:
 - **LibCrypt** — `*` if the game is not LibCrypt. **No** if it still needs the patch. **Yes** if the BIN is already patched.
 - **CRC** — `*` when CRC check is off. **Yes** if the tracks match Redump. **No** if they do not. `—` if Redump has no track data for that game. A LibCrypt patch changes the BIN, so CRC shows **No** afterwards.
 
-## Use
+## Windows with Docker Desktop
 
-Clone [brokenbadger/psio-gm](https://github.com/brokenbadger/psio-gm) and put each game's bin and cue files in `games`. From the repo folder:
+Use Docker Desktop on Windows. It runs this Linux image. Leave Docker Desktop on Linux containers, which is the default. A normal Windows PC receives `linux/amd64`. Windows on ARM receives `linux/arm64`.
+
+1. Install [Docker Desktop for Windows](https://docs.docker.com/desktop/setup/install/windows-install/). The per-user install is the usual choice. Start Docker Desktop, accept the agreement, and wait until it is running.
+2. Clone [brokenbadger/psio-gm](https://github.com/brokenbadger/psio-gm) with GitHub Desktop or:
+
+```powershell
+git clone https://github.com/brokenbadger/psio-gm.git
+cd psio-gm
+```
+
+3. Put each game's `.bin` and `.cue` files in the `games` folder inside that clone.
+4. Open PowerShell in the clone folder and start the stable image:
+
+```powershell
+docker compose pull
+docker compose up -d
+```
+
+5. Open http://127.0.0.1:5000, click **Scan**, then **Process**.
+
+Docker Desktop handles the game files, so do not set `PUID` or `PGID`.
+
+Games stored somewhere else:
+
+```powershell
+$env:PSIO_GAMES_DIR="D:\PS1\games"
+docker compose pull
+docker compose up -d
+```
+
+Later, start and stop the same container from the Docker Desktop window, or in PowerShell:
+
+```powershell
+docker start psio-gm
+docker stop psio-gm
+```
+
+When a new stable image is published, run `docker compose pull` and `docker compose up -d` again from the clone folder.
+
+## Linux and macOS
+
+macOS uses Docker Desktop, the same way as Windows, so do not set `PUID` or `PGID`. From the clone folder, with each game's `.bin` and `.cue` in `games`:
 
 ```bash
 docker compose pull
 docker compose up -d
 ```
 
-Open http://127.0.0.1:5000, click **Scan**, then **Process**.
-
 On Linux with Docker Engine, match the files to your user:
 
 ```bash
+PUID=$(id -u) PGID=$(id -g) docker compose pull
 PUID=$(id -u) PGID=$(id -g) docker compose up -d
 ```
 
-To use a different folder:
+Another games folder:
 
 ```bash
+PSIO_GAMES_DIR=/path/to/your/games docker compose pull
 PSIO_GAMES_DIR=/path/to/your/games docker compose up -d
 ```
 
-Windows PowerShell:
-
-```powershell
-$env:PSIO_GAMES_DIR="C:\path\to\your\games"
-docker compose up -d
-```
-
-Later, stop and start the same container with `docker stop psio-gm` and `docker start psio-gm`.
+Open http://127.0.0.1:5000, click **Scan**, then **Process**. Later, `docker start psio-gm` and `docker stop psio-gm`.
 
 `latest` and `stable` track the newest stable release. `0.2.4` is the current release.
